@@ -1,0 +1,70 @@
+html{
+    background-image: url(/Imagens/gestão-de-estoque.jpg);
+}
+
+#titulo{
+    margin-top: 1rem;
+    font-size: 4rem;
+    text-align: center;
+    font-family: "Irish Grover", serif;
+}
+
+main {
+    margin:5.5rem auto 5.5rem auto;
+    width: 50%;
+    height: 100%;
+    background-color: rgb(199, 199, 199);
+    justify-content: center;
+    border-radius: 20px;
+    box-shadow: 0 0 10px 12px rgba(51, 51, 51, 0.7) ;
+    padding: 50px 0;
+}
+
+form{
+    height: 100%;
+    width: 40%;
+    margin: 30px auto 30px auto;
+}
+
+label{
+    margin: 3rem .5rem .5rem 0.5rem;
+    display:flex;
+    flex-direction: column;
+}
+
+h2 {
+    text-align: center;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+h3{
+    text-align:center;
+    font-size: 23px;
+}
+
+#cadastro{
+    padding: 3rem
+}
+
+#submit{
+    cursor: pointer;
+    width: 30%;
+    padding: 5px;
+    border-radius: 5px;
+    margin: auto;
+    background-color: limegreen;
+}
+
+.login{
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+div {
+    margin-top: 5rem;
+}
+
+#descricao {
+    margin-top: -3rem;
+}
