@@ -9,19 +9,25 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet">
-        <script src='main.js'></script>
+        <script src='login.js'></script>
     </head>
     <body>
         <main>
             <h1 id="titulo">Stock Master</h1>
             <h2 id="descricao">O Gerenciador de Inventários que Você Precisa</p>
-            <form>
-                <h3>Realize seu Login</h3>
-                <label>E-mail:<input class="login" id="email" type="email" placeholder="Digite seu e-mail..." required></label>
-                <label>Senha: <input class="login" id="senha" type="password" placeholder="Digite sua senha..." required></label>
-                <label><button id="submit" type="submit">Login</button></label>
+            <form class="form-content" id="form">
+                <h3 id="subtitulo">Realize seu Login</h3>
+                <label id="email">E-mail:
+                    <input class="login" type="email" placeholder="Digite seu e-mail..." required><a class="error">Mensagem de Erro</a>
+                </label>
+                <label id="senha">Senha:
+                    <input class="login"  type="password" placeholder="Digite sua senha..." required><a class="error">Mensagem de Erro</a>
+                </label>
+                <label>
+                    <button id="submit" type="submit"><strong>ENTRAR</strong></button>
+                </label>
             </form>
-            <h3 id="cadastro">Não tem uma conta? <a href="cadastro.html">Cadastre-se</a></h3>
+            <h3 id="cadastro">Não tem uma conta? <a href="/Cadastro/cadastro.html">Cadastre-se</a></h3>
         </main>
     </body>
 </html>

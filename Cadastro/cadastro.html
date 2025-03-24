@@ -1,27 +1,36 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>StockMaster - Cadastro</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='cadastro.css'>
-    <script src='main.js'></script>
-</head>
-<body>
-    <main>
-        <h1>StockMaster</h1>
-        <div>
-            <h2>O Gerenciador de Inventários que Você Precisa</p>
-        </div>
-        <div>
-            <h2>Login</h2>
-            <input id="email" type="text" placeholder="E-mail" required>
-            <input id="senha" type="text" placeholder="Senha" required>
-            <input id="conf_senha" type="text" placeholder="Confirmar Senha" required>
-            <button type="submit">Login</button>
-        </div>
-        <h2>Já tem uma conta? <a href="login.html">Entrar</a></h2>
-    </main>
-</body>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <title>StockMaster - Cadastro</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link rel='stylesheet' type='text/css' media='screen' href='cadastro.css'>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <main>
+            <h1 id="titulo">Stock Master</h1>
+            <h2 id="descricao">O Gerenciador de Inventários que Você Precisa</h2>
+            <form class="form-content" id="form">
+                <h3 id="subtitulo">Cadastre-se</h3>
+                <label for="email">E-mail:
+                    <input class="cadastro" id="email" type="email" placeholder="Digite um novo e-mail..." required><a class="error">Mensagem de Erro</a>
+                </label>
+                <label for="senha">Senha:
+                    <input class="cadastro" id="senha" type="password" placeholder="Crie sua senha..." required><a class="error">Mensagem de Erro</a>
+                </label>
+                <label for="conf_senha">Confirmar senha:
+                    <input class="cadastro" id="conf_senha" type="password" placeholder="Confirme sua senha..." required><a class="error">Mensagem de Erro</a>
+                </label>
+                <label>
+                    <button id="submit" type="submit"><strong>CADASTRAR</strong></button>
+                </label>
+            </form>
+            <h3 id="login">Já tem uma conta? <a href="/Login/login.html">Entrar</a></h3>
+        </main>
+        <script defer src='cadastro.js'></script>
+    </body>
 </html>
