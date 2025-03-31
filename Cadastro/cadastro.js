@@ -1,13 +1,22 @@
 const email = document.getElementById("email");
 const senha = document.getElementById("senha");
 const confirmSenha = document.getElementById("conf_senha");
-const form = document.getElementById("form");
 
-if (senha!=confirmSenha){
-        alert("As senhas não coincidem.");
-}
 
 form.addEventListener("submit", (event) => {
         event.preventDefault();
-        alert("Cadastrado com sucesso!")
+        if(senha===confirmSenha){
+                alert("Cadastrado com sucesso!")
+        } else {
+                alert("As senhas não coincidem!");
+        }
 })
+
+class Usuario {
+        constructor(email, senha){
+                this.email = email;
+                this.senha = senha;
+        }
+}
+
+const usuario = new Usuario();

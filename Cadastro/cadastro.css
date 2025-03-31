@@ -79,13 +79,3 @@ div {
 a{
     text-decoration: none;
 }
-
-.error{
-    font-size: 15px;
-    color: red;
-    visibility: hidden;
-}
-
-form-content.error input {
-    border: red;
-}
