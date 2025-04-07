@@ -19,4 +19,4 @@ class Usuario {
         }
 }
 
-const usuario = new Usuario();
+export const usuario = new Usuario();
