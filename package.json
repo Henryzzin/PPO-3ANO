@@ -1,0 +1,16 @@
+{
+  "name": "ppo-3ano",
+  "version": "1.0.0",
+  "description": "StockMaster - project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --watch server.js"
+  },
+  "author": "henryzzin",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.6.0",
+    "express": "^5.1.0",
+    "prisma": "^6.6.0"
+  }
+}
