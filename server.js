@@ -1,7 +1,9 @@
 const express = require("express");
 const path = require('path'); 
 const app = express();
-const prismaRequest = require("prisma");
+const { PrismaClient } = require('@prisma/client');
+const prismaClient = new PrismaClient();
+const cors = require('cors');
 
 app.use(express.static(path.join(__dirname, 'Cadastro'))); 
 
@@ -13,10 +15,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
-const prisma = new prismaRequest.PrismaClient();
-const { PrismaClient } = require('@prisma/client');
-const prismaClient = new PrismaClient();
-const cors = require('cors');
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
