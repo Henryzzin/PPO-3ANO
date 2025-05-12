@@ -10,6 +10,7 @@ body {
     height: 1px;
     background-color: #444;
     margin: 10px 0;
+    padding: 0;
   }
 
   #logo {
@@ -78,14 +79,21 @@ body {
   #toggleSidebar {
     position: absolute;
     top: 50%;
-    right: -20px;
-    transform: translateY(-50%;
-    background: none;
+    right: -7.5px;
+    height: 50px;
+    width: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transform: translateY(-50%);
+    background: #555;
     border: none;
     font-size: 18px;
     cursor: pointer;
     color: #fff;
     z-index: 10;
+    border-radius: 5px;
   }
   
   .main-content {
@@ -101,7 +109,16 @@ body {
     border-radius: 4px;
   }
 
-  #createInventory {
+  #createInventory, #deleteInventory {
     text-decoration: none;
     color: inherit;
+    margin: 0 0 10px 10px;
+  }
+
+  .delete {
+    background-color: red;
+  }
+
+  h1 {
+    margin: 0 20px;
   }

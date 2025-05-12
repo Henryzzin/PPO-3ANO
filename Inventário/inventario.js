@@ -3,8 +3,9 @@ const sidebar = document.getElementById('sidebar');
 const createBtn = document.getElementById('createInventory');
 const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.querySelector('.main-content h1');
+const deleteBtn = document.getElementById('deleteInventory');
 
-let inventoryCount = 3;
+let inventoryCount = 0;
 
 // Retrátil
 toggleBtn.addEventListener('click', () => {
@@ -15,12 +16,17 @@ toggleBtn.addEventListener('click', () => {
 // Criar novo inventário
 createBtn.addEventListener('click', () => {
   inventoryCount++;
-  const name = `INVENTÁRIO ${inventoryCount} >`;
+  const name = `Inventário ${inventoryCount} >`;
   const a = document.createElement('a');
   a.href = "#";
   a.classList.add('inventory');
   a.textContent = name;
   inventoryList.appendChild(a);
+});
+
+// Deletar inventário
+deleteBtn.addEventListener('click', () => {
+
 });
 
 // Mudar título ou editar nome
