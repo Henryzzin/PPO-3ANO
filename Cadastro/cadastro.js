@@ -11,6 +11,7 @@ buttonSubmit.addEventListener("submit", (event) => {
         } else {
                 alert("As senhas não coincidem!");
         }
+        window.open(url, '/Inventário/inventario.html')
 })
 
 form.addEventListener("submit", async (event) => {
@@ -37,7 +38,7 @@ form.addEventListener("submit", async (event) => {
         const data = await response.json();
         if (response.ok) {
             alert(data.message);
-            window.location.href = "/Login/login.html";
+            window.location.href = "/Inventário/inventario.html";
         } else {
             alert(data.error || "Erro ao cadastrar.");
         }

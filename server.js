@@ -5,20 +5,26 @@ const { PrismaClient } = require('@prisma/client');
 const prismaClient = new PrismaClient();
 const cors = require('cors');
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(express.static(path.join(__dirname, 'Cadastro'))); 
+app.use(express.static(path.join(__dirname, 'Inventário')));
+app.use(express.static(path.join(__dirname, 'Login')));
+app.use(express.static(path.join(__dirname, 'Imagens')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Cadastro', 'cadastro.html')); 
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 
 
 
