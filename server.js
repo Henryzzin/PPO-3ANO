@@ -1,30 +1,25 @@
 const express = require("express");
 const path = require('path'); 
 const app = express();
-const { PrismaClient } = require('@prisma/client');
-const prismaClient = new PrismaClient();
-const cors = require('cors');
+const prismaRequest = require("prisma");
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(express.static(path.join(__dirname, 'Cadastro'))); 
-app.use(express.static(path.join(__dirname, 'Inventário')));
-app.use(express.static(path.join(__dirname, 'Login')));
-app.use(express.static(path.join(__dirname, 'Imagens')));
+app.use(express.static(path.join(__dirname, 'public'))); 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Cadastro', 'cadastro.html')); 
+    res.sendFile(path.join(__dirname, 'public', 'cadastro.html')); 
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-
+const prisma = new prismaRequest.PrismaClient();
+const { PrismaClient } = require('@prisma/client');
+const prismaClient = new PrismaClient();
+const cors = require('cors');
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 
