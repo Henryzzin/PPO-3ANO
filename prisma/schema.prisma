@@ -17,8 +17,7 @@ model Usuario {
   id              Int       @id @default(autoincrement())
   email           String    @unique
   senha           String
-  idInventarioFK  Int
-  idInventario    Inventario @relation(fields: [idInventarioFK], references: [id])
+  inventarios     Inventario[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
@@ -26,9 +25,9 @@ model Usuario {
 model Inventario {
   id              Int       @id @default(autoincrement())
   nome            String
-  idProdutoFK     Int
-  idProduto       Produto    @relation(fields: [idProdutoFK], references: [id])
-  usuarios        Usuario[]
+  idUsuarioFK     Int
+  idUsuario       Usuario    @relation(fields: [idUsuarioFK], references: [id])
+  produtos        Produto[]
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
@@ -39,7 +38,8 @@ model Produto {
   nome            String
   quantidade      Int @default(0)
   preco           Float 
-  inventarios     Inventario[]
+  idInventarioFK  Int
+  idInventario    Inventario @relation(fields: [idInventarioFK], references: [id])
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
