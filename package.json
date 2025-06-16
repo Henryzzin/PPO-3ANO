@@ -4,12 +4,16 @@
   "description": "StockMaster - project",
   "main": "server.js",
   "scripts": {
-    "start": "node --watch server.js"
+    "start": "npx ts-node server.ts"
   },
   "author": "henryzzin",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.6.0",
+    "@types/body-parser": "^1.19.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "prisma": "^6.7.0",

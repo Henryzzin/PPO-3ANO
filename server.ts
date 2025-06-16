@@ -1,36 +1,25 @@
-const express = require("express");
-const path = require('path'); 
-const app = express();
-const prismaRequest = require("prisma");
+import express, { Request, Response } from "express";
+import path from "path";
+import cors from "cors";
+import { PrismaClient } from "@prisma/client";
 
+const app = express();
+const prisma = new PrismaClient();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); 
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'cadastro.html')); 
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-});
-const prisma = new prismaRequest.PrismaClient();
-const { PrismaClient } = require('@prisma/client');
-const prismaClient = new PrismaClient();
-const cors = require('cors');
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-
-//-------------------------------------------------------------------------------------------------------------------//
-
-app.post('/cadastro', async (req, res) => {
+app.post('/cadastro', async (req: Request, res: Response) => {
     const { email, senha } = req.body;
 
     try {
-        // Salva o usuário no banco de dados
-        const novoUsuario = await prismaClient.usuario.create({
+        const novoUsuario = await prisma.usuario.create({
             data: {
                 email,
                 senha,
@@ -41,4 +30,9 @@ app.post('/cadastro', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "Erro ao cadastrar o usuário." });
     }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
