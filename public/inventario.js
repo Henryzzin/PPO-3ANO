@@ -24,11 +24,6 @@ createBtn.addEventListener('click', () => {
   inventoryList.appendChild(a);
 });
 
-// Deletar inventário
-deleteBtn.addEventListener('click', () => {
-
-});
-
 // Mudar título ou editar nome
 inventoryList.addEventListener('click', (e) => {
   if (e.target.classList.contains('inventory')) {

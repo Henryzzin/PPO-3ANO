@@ -15,8 +15,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'cadastro.html')); 
 });
 
-app.post('/cadastro', async (req: Request, res: Response) => {
+app.post('/cadastro', async (req: Request, res: any) => {
     const { email, senha } = req.body;
+
+    const usuarioExistente = await prisma.usuario.findUnique({
+        where: { email }
+    });
+
+    if(usuarioExistente){
+        return res.status(400).json({error: "Este email já está sendo utilizado"});
+    }
 
     try {
         const novoUsuario = await prisma.usuario.create({
@@ -31,6 +39,18 @@ app.post('/cadastro', async (req: Request, res: Response) => {
         res.status(500).json({ error: "Erro ao cadastrar o usuário." });
     }
 });
+
+app.post('/login', async (req: Request, res: any) => {
+    const { email, senha } = req.body;
+
+    const usuarioExistente = await prisma.usuario.findMany({
+        where: { email, senha }
+    });
+    if(usuarioExistente){
+        return res.status(200).json({ message: "Usuário conectado com sucesso!"})
+    } 
+    res.status(500).json({ error: "Email ou senha inválidos." });
+})
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

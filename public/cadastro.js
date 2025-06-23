@@ -1,18 +1,4 @@
-const email = document.getElementById("email");
-const senha = document.getElementById("senha");
-const confirmSenha = document.getElementById("conf_senha");
-const buttonSubmit = document.getElementById("submit")
 const form = document.getElementById("form");
-
-buttonSubmit.addEventListener("submit", (event) => {
-        event.preventDefault();
-        if(senha===confirmSenha){
-                alert("Cadastrado com sucesso!")
-        } else {
-                alert("As senhas não coincidem!");
-        }
-        window.open(url, '/Inventário/inventario.html')
-})
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -38,7 +24,7 @@ form.addEventListener("submit", async (event) => {
         const data = await response.json();
         if (response.ok) {
             alert(data.message);
-            window.location.href = "/Inventário/inventario.html";
+            window.location.href = "inventario.html";
         } else {
             alert(data.error || "Erro ao cadastrar.");
         }
@@ -47,12 +33,3 @@ form.addEventListener("submit", async (event) => {
         alert("Erro ao conectar ao servidor.");
     }
 });
-
-// class Usuario {
-//         constructor(email, senha){
-//                 this.email = email;
-//                 this.senha = senha;
-//         }
-// }
-
-// export const usuario = new Usuario();
