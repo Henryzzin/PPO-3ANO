@@ -17,6 +17,7 @@ form.addEventListener("submit", async (event) => {
 
         const data = await response.json();
         if (response.ok) {
+            localStorage.setItem("usuario", JSON.stringify(data.usuario));
             alert(data.message);
             window.location.href = "inventario.html";
         } else {
