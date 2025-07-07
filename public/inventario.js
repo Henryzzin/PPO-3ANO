@@ -52,14 +52,9 @@ createBtn.addEventListener('click', async () => {
         return;
     }
 
-  inventoryCount++;
+  
 
-  const invName = `Inventário ${inventoryCount} >`;
-  const a = document.createElement('a');
-  a.href = "#";
-  a.classList.add('inventory');
-  a.textContent = invName;
-  inventoryList.appendChild(a);
+  
 
   try {
     const response = await fetch("/inventario", {
@@ -72,6 +67,28 @@ createBtn.addEventListener('click', async () => {
 
     if(!response.ok) {
       throw new Error("Erro ao criar inventário.")
+    } else {
+      const response = await fetch("/listaInventario", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        //body: JSON.stringify()
+      })
+      //const invList = await prisma.inventario.findMany(); //TERMINAR REQUISICAAAAAAAAAAAAAAAAAO, NAO DEVE PASSAR NADA E DEVE VOLTAR TODA A INVLIST
+
+      const invList = response.body;
+      inventoryList.innerHTML = '';
+      invList.forEach(function(inventario, index) {
+        const invName = `Inventário ${inventario.id} >`;
+        const a = document.createElement('a');
+        a.href = "#";
+        a.value = inventario.id;
+        a.classList.add('inventory');
+        a.textContent = invName;
+        inventoryList.appendChild(a); 
+      });
+      
     }
   } catch (error) {
     console.error("Falha ao criar inventário.", error);
@@ -84,6 +101,7 @@ inventoryList.addEventListener('click', (e) => {
     mainTitle.textContent = e.target.textContent.replace(" >", "");
     deleteBtn.style.opacity = "1";
     deleteBtn.style.visibility = "visible"
+    //deleteBtn.value=
   }
 });
 
@@ -116,5 +134,19 @@ inventoryList.addEventListener('dblclick', (e) => {
 });
 
 deleteBtn.addEventListener('click', () => {
+  try {
+    const response = await fetch("/deleteInventario", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({  }),
+    });
 
+    if(!response.ok) {
+      throw new Error("Erro ao deletar inventário.")
+    }
+  } catch (error) {
+    console.error("Falha ao deletar inventário.", error);
+  }
 });

@@ -43,8 +43,10 @@ app.post('/cadastro', async (req: Request, res: any) => {
 app.post('/login', async (req: Request, res: any) => {
     const { email, senha } = req.body;
 
-    if (!email || !senha) {
-        return res.status(400).json({ error: "Email e senha são obrigatórios." });
+    if (!email) {
+        return res.status(400).json({ error: "Email é obrigatório." });
+    } else if (!senha) {
+        return res.status(400).json({ error: "Senha é obrigatória." });
     }
 
     try {
@@ -85,8 +87,9 @@ app.post('/inventario', async (req: Request, res: any) => {
     }
 })
 
-app.post('/inventarios/:idUsuario', async (req: Request, res: any) => {
-    const {idUsuario} = req.params;
+app.post('/inventario', async (req: Request, res: any) => {
+    const idUsuario = req.body.idUsuario;
+    const nome = req.body.nome;
 
     try {
         const inventarios = await prisma.inventario.findMany({
@@ -99,8 +102,8 @@ app.post('/inventarios/:idUsuario', async (req: Request, res: any) => {
     }
 })
 
-app.delete('/inventario/:id', async (req: Request, res: Response) => {
-    const { id } = req.params; 
+app.post('/deleteInventario', async (req: Request, res: Response) => {
+    const id = req.body.idInventario; 
 
     try {
         await prisma.inventario.delete({
