@@ -1,3 +1,5 @@
+let selectedInventoryId = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
@@ -18,7 +20,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         a.href = "#";
         a.classList.add('inventory');
         a.textContent = inventario.nome + " >";
-        inventoryList.appendChild(a);
+        a.dataset.id = inventario.id;
+        inventoryList.appendChild(a); //----------------------------------------------------------------------------------------------------
       });
     } else {
       console.error("Erro ao carregar inventários:", data.error);
@@ -52,39 +55,33 @@ createBtn.addEventListener('click', async () => {
       return;
   }
 
+  const invName = prompt("Digite o nome do novo inventário:");
+  if (!invName) return;
+
   try {
     const response = await fetch("/inventario", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ nome: invName, idUsuario: usuario }),
+      body: JSON.stringify({ nome: invName, idUsuario: usuario.id }),
     });
 
     if(!response.ok) {
       throw new Error("Erro ao criar inventário.")
     } else {
-      const response = await fetch("/listaInventario", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify()
-      })
-      //const invList = await prisma.inventario.findMany(); //TERMINAR REQUISICAAAAAAAAAAAAAAAAAO, NAO DEVE PASSAR NADA E DEVE VOLTAR TODA A INVLIST
-
-      const invList = response.body;
+      // Recarrega a lista de inventários
+      const res = await fetch(`/inventarios/${usuario.id}`);
+      const data = await res.json();
       inventoryList.innerHTML = '';
-      invList.forEach(function(inventario, index) {
-        const invName = `Inventário ${inventario.id} >`;
+      data.inventarios.forEach((inventario) => {
         const a = document.createElement('a');
         a.href = "#";
-        a.value = inventario.id;
         a.classList.add('inventory');
-        a.textContent = invName;
-        inventoryList.appendChild(a); 
+        a.textContent = inventario.nome + " >";
+        a.dataset.id = inventario.id;
+        inventoryList.appendChild(a);
       });
-      
     }
   } catch (error) {
     console.error("Falha ao criar inventário.", error);
@@ -97,7 +94,7 @@ inventoryList.addEventListener('click', (e) => {
     mainTitle.textContent = e.target.textContent.replace(" >", "");
     deleteBtn.style.opacity = "1";
     deleteBtn.style.visibility = "visible"
-    //deleteBtn.value=
+    selectedInventoryId = e.target.dataset.id; // Salva o id selecionado
   }
 });
 
@@ -130,17 +127,42 @@ inventoryList.addEventListener('dblclick', (e) => {
 });
 
 deleteBtn.addEventListener('click', async () => {
+  if (!selectedInventoryId) {
+    alert("Selecione um inventário para excluir.");
+    return;
+  }
+  if (!confirm("Tem certeza que deseja excluir este inventário?")) return;
+
   try {
     const response = await fetch("/deleteInventario", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({  }),
+      body: JSON.stringify({ idInventario: selectedInventoryId }),
     });
 
-    if(!response.ok) {
-      throw new Error("Erro ao deletar inventário.")
+    if (!response.ok) {
+      throw new Error("Erro ao deletar inventário.");
+    } else {
+      // Remove da lista e limpa seleção
+      mainTitle.textContent = "";
+      deleteBtn.style.opacity = "0";
+      deleteBtn.style.visibility = "hidden";
+      selectedInventoryId = null;
+      // Recarrega a lista
+      const usuario = JSON.parse(localStorage.getItem("usuario"));
+      const res = await fetch(`/inventarios/${usuario.id}`);
+      const data = await res.json();
+      inventoryList.innerHTML = '';
+      data.inventarios.forEach((inventario) => {
+        const a = document.createElement('a');
+        a.href = "#";
+        a.classList.add('inventory');
+        a.textContent = inventario.nome + " >";
+        a.dataset.id = inventario.id;
+        inventoryList.appendChild(a);
+      });
     }
   } catch (error) {
     console.error("Falha ao deletar inventário.", error);

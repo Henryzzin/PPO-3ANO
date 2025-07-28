@@ -87,20 +87,21 @@ app.post('/inventario', async (req: Request, res: any) => {
     }
 })
 
-app.post('/inventario', async (req: Request, res: any) => {
-    const idUsuario = req.body.idUsuario;
-    const nome = req.body.nome;
-
+app.get('/inventarios/:idUsuario', async (req: Request, res: Response) => {
+    const idUsuario = parseInt(req.params.idUsuario);
+    if (isNaN(idUsuario)) {
+        return res.status(400).json({ error: "ID de usuário inválido." });
+    }
     try {
         const inventarios = await prisma.inventario.findMany({
-            where: {idUsuarioFK: parseInt(idUsuario)}
+            where: { idUsuarioFK: idUsuario }
         });
         res.status(200).json({ inventarios });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Erro no carregamento dos inventários."})
+        res.status(500).json({ error: "Erro ao buscar inventários." });
     }
-})
+});
 
 app.post('/deleteInventario', async (req: Request, res: Response) => {
     const id = req.body.idInventario; 
