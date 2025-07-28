@@ -1,3 +1,11 @@
+const toggleBtn = document.getElementById('toggleSidebar');
+const sidebar = document.getElementById('sidebar');
+const createBtn = document.getElementById('createInventory');
+const inventoryList = document.getElementById('inventoryList');
+const mainTitle = document.querySelector('.main-content h1');
+const deleteBtn = document.getElementById('deleteInventory');
+
+let inventoryCount = 0;
 let selectedInventoryId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -30,15 +38,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Erro ao conectar ao servidor:", error);
   }
 });
-
-const toggleBtn = document.getElementById('toggleSidebar');
-const sidebar = document.getElementById('sidebar');
-const createBtn = document.getElementById('createInventory');
-const inventoryList = document.getElementById('inventoryList');
-const mainTitle = document.querySelector('.main-content h1');
-const deleteBtn = document.getElementById('deleteInventory');
-
-let inventoryCount = 0;
 
 // Retrátil
 toggleBtn.addEventListener('click', () => {
@@ -94,7 +93,7 @@ inventoryList.addEventListener('click', (e) => {
     mainTitle.textContent = e.target.textContent.replace(" >", "");
     deleteBtn.style.opacity = "1";
     deleteBtn.style.visibility = "visible"
-    selectedInventoryId = e.target.dataset.id; // Salva o id selecionado
+    selectedInventoryId = e.target.dataset.id;
   }
 });
 

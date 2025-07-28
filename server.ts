@@ -87,7 +87,7 @@ app.post('/inventario', async (req: Request, res: any) => {
     }
 })
 
-app.get('/inventarios/:idUsuario', async (req: Request, res: Response) => {
+app.get('/inventarios/:idUsuario', async (req: any, res: any) => {
     const idUsuario = parseInt(req.params.idUsuario);
     if (isNaN(idUsuario)) {
         return res.status(400).json({ error: "ID de usuário inválido." });
