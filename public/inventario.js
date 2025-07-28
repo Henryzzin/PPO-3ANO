@@ -47,14 +47,10 @@ toggleBtn.addEventListener('click', () => {
 createBtn.addEventListener('click', async () => {
   const usuario = JSON.parse(localStorage.getItem("usuario")); // Recupera o usuário do localStorage
 
-    if (!usuario) {
-        alert("Usuário não autenticado!");
-        return;
-    }
-
-  
-
-  
+  if (!usuario) {
+      alert("Usuário não autenticado!");
+      return;
+  }
 
   try {
     const response = await fetch("/inventario", {
@@ -73,7 +69,7 @@ createBtn.addEventListener('click', async () => {
         headers: {
           "Content-Type": "application/json",
         },
-        //body: JSON.stringify()
+        body: JSON.stringify()
       })
       //const invList = await prisma.inventario.findMany(); //TERMINAR REQUISICAAAAAAAAAAAAAAAAAO, NAO DEVE PASSAR NADA E DEVE VOLTAR TODA A INVLIST
 
@@ -133,7 +129,7 @@ inventoryList.addEventListener('dblclick', (e) => {
   }
 });
 
-deleteBtn.addEventListener('click', () => {
+deleteBtn.addEventListener('click', async () => {
   try {
     const response = await fetch("/deleteInventario", {
       method: "POST",

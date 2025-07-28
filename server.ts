@@ -74,12 +74,12 @@ app.post('/inventario', async (req: Request, res: any) => {
     const { nome, idUsuario } = req.body;
 
     try {
-            const novoInventario = await prisma.inventario.create({
-                data: {
-                nome,
-                idUsuarioFK: idUsuario
-                }
-            });
+        const novoInventario = await prisma.inventario.create({
+            data: {
+            nome,
+            idUsuarioFK: idUsuario
+            }
+        });
         res.status(201).json({ message: "Inventário criado com sucesso!", inventario: novoInventario });
     } catch (error) {
         console.error(error);
@@ -116,6 +116,15 @@ app.post('/deleteInventario', async (req: Request, res: Response) => {
     }
 });
 
+app.post('/listaInventario', async (req: Request, res: Response) => {
+    try {
+        const invList = await prisma.inventario.findMany();
+        res.status(200).json({ invList })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro ao encontrar inventários."})
+    }
+});
 
 
 
