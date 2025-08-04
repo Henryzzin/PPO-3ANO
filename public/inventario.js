@@ -4,6 +4,8 @@ const createBtn = document.getElementById('createInventory');
 const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.querySelector('.main-content h1');
 const deleteBtn = document.getElementById('deleteInventory');
+const items = document.querySelector('.items');
+const createProductButton = document.getElementById('createProductButton');
 
 let inventoryCount = 0;
 let selectedInventoryId = null;
@@ -97,7 +99,7 @@ inventoryList.addEventListener('click', (e) => {
   }
 });
 
-inventoryList.addEventListener('dblclick', (e) => {
+inventoryList.addEventListener('dblclick', async (e) => {
   if (e.target.classList.contains('inventory')) {
     const link = e.target;
     const currentText = link.textContent.replace(" >", "");
@@ -108,13 +110,25 @@ inventoryList.addEventListener('dblclick', (e) => {
     link.replaceWith(input);
     input.focus();
 
-    input.addEventListener('blur', () => {
+    input.addEventListener('blur', async () => {
       const newName = input.value || currentText;
       const newLink = document.createElement('a');
       newLink.href = "#";
       newLink.classList.add('inventory');
       newLink.textContent = newName + ' >';
       input.replaceWith(newLink);
+
+      try{
+        await fetch("/nomeInventario", {
+          method: "POST",
+          headers: {
+          "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idInventario: Number(link.dataset.id), novoNome: newName }),
+        });
+      } catch (error) {
+        console.error("Falha ao trocar o nome do inventário.", error);
+      }
     });
 
     input.addEventListener('keydown', (ev) => {
@@ -122,6 +136,7 @@ inventoryList.addEventListener('dblclick', (e) => {
         input.blur();
       }
     });
+
   }
 });
 
@@ -165,5 +180,28 @@ deleteBtn.addEventListener('click', async () => {
     }
   } catch (error) {
     console.error("Falha ao deletar inventário.", error);
+  }
+});
+
+createProductButton.addEventListener('click', async() => {
+  try{
+    const response = await fetch("/createProduct", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ idInventario: selectedInventoryId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Erro ao criar produto.");
+    } else {
+      // Atualiza a lista de itens
+      const product = await response.json();
+      const productDiv = document.createElement('div');
+      productDiv.classList.add('products');
+      productDiv.textContent = product.nome; // Supondo que o product tenha um campo 'nome'
+      products.appendChild(productDiv);
+    }
   }
 });
