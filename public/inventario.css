@@ -141,7 +141,7 @@ body {
     margin-top: 20px; 
   }
 
-  #createProductsButton {
+  #createProductButton {
     width: 75px;
     height: 75px;
     background-color: rgb(168, 168, 168);
@@ -153,13 +153,51 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 37.5px 37.5px;
+    margin: 67.5px 50px;
   }
 
-  .createProducts, .products {
-    width: 150px;
-    height: 150px;
+  .createProduct, .products {
+    width: 175px;
+    height: 200px;
     background-color: black;
     border: none;
     border-radius: 10px;
+  }
+
+  #dialogCreateProduct {
+    position: fixed;
+    width: 400px;
+    height: 300px;
+    top: 50%;
+    left: 50%;
+    right: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #777;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none; /* Initially hidden */
+  }
+
+  #saveProduct {
+    width: 100px;
+    height: 40px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-left: 72%;
+  }
+
+  .productInput {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
   }

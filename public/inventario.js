@@ -6,6 +6,8 @@ const mainTitle = document.querySelector('.main-content h1');
 const deleteBtn = document.getElementById('deleteInventory');
 const items = document.querySelector('.items');
 const createProductButton = document.getElementById('createProductButton');
+const dialogCreateProduct = document.getElementById('dialogCreateProduct');
+const saveProductButton = document.getElementById('saveProduct');
 
 let inventoryCount = 0;
 let selectedInventoryId = null;
@@ -184,13 +186,26 @@ deleteBtn.addEventListener('click', async () => {
 });
 
 createProductButton.addEventListener('click', async() => {
+  dialogCreateProduct.style.display = "block";
+  saveProductButton.addEventListener('click', () => {
+    const productName = document.getElementById('productName');
+    const productPrice = document.getElementById('productPrice');
+    const productQuantity = document.getElementById('productQuantity');
+    dialogCreateProduct.style.display = "none";
+  });
+
   try{
     const response = await fetch("/createProduct", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ idInventario: selectedInventoryId }),
+      body: JSON.stringify({ 
+        idInventario: selectedInventoryId, 
+        productName: productName.value, 
+        productPrice: productPrice.value, 
+        productQuantity: productQuantity.value   
+      }),
     });
 
     if (!response.ok) {
@@ -201,7 +216,12 @@ createProductButton.addEventListener('click', async() => {
       const productDiv = document.createElement('div');
       productDiv.classList.add('products');
       productDiv.textContent = product.nome; // Supondo que o product tenha um campo 'nome'
-      products.appendChild(productDiv);
+      items.appendChild(productDiv);
     }
+  } catch (error) {
+    console.error("Falha ao criar produto.", error);
   }
+  productName.value = "";
+  productPrice.value = "";
+  productQuantity.value = "";
 });

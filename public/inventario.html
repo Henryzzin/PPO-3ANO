@@ -20,7 +20,6 @@
       <a href="#" id="createInventory" class="create" >+ CRIAR INVENTÁRIO</a>
       <button id="toggleSidebar" aria-label="Alternar barra lateral">≡</button>
     </div>
-    <div class='container'></div>
     <div class="main-content">
       <h1>-</h1>
       <button type="button" value="" href="#" id="deleteInventory" class="delete"><img id="imgDeleteInv" src="ImgDeleteInv.png" alt="Deletar Inventário"></button>
@@ -29,6 +28,13 @@
           <button id="createProductButton">+</button>
         </div>
       </div>
+      <dialog id="dialogCreateProduct">
+        <h2>Adicionar Produto</h2>
+        <input type="text" class="productInput" id="productName" placeholder="Nome do Produto" required>
+        <input type="number" class="productInput" id="productQuantity" placeholder="Quantidade" required>
+        <input type="number" class="productInput" id="productPrice" placeholder="Preço Unitário" required>
+        <button id="saveProduct">Salvar</button>
+      </dialog>
     </div>
 </body>
 <script defer src='inventario.js'></script>

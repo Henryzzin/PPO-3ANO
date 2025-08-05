@@ -148,23 +148,27 @@ app.post('/nomeInventario', async (req: Request, res: any) => {
     }
 });
 
-app.post('/createItem', async (req: Request, res: any) => {
-    const { idInventario, nome } = req.body;
+app.post('/createProduct', async (req: Request, res: any) => {
+    const { idInventario, nome, preco, quantidade } = req.body;
+
+    if( quantidade < 0 || preco < 0) {
+        return res.status(400).json({ error: "Quantidade e preço devem ser maiores ou iguais a zero." });
+    }
 
     if (!idInventario || !nome) {
-        return res.status(400).json({ error: "ID do inventário e nome do item são obrigatórios." });
+        return res.status(400).json({ error: "ID do inventário e nome do produto são obrigatórios." });
     }
 
     try {
-        const novoItem = await prisma.produto.create({
+        const novoProduto = await prisma.produto.create({
             data: {
                 nome,
                 preco,
-                quantidade: 0,
+                quantidade,
                 idInventarioFK: parseInt(idInventario)
             }
         });
-        res.status(201).json({ message: "Item criado com sucesso!", item: novoItem });
+        res.status(201).json({ message: "Item criado com sucesso!", produto: novoProduto });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Erro ao criar item." });
