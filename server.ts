@@ -63,7 +63,7 @@ app.post('/login', async (req: Request, res: any) => {
             })
         }
 
-        res.status(500).json({ error: "Email ou senha inválidos." });
+        res.status(401).json({ error: "Email ou senha inválidos." });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Erro ao se conectar." })
@@ -150,7 +150,6 @@ app.post('/nomeInventario', async (req: Request, res: any) => {
 
 app.post('/createProduct', async (req: Request, res: any) => {
     const { idInventario, nome, preco, quantidade } = req.body;
-
     if( quantidade < 0 || preco < 0) {
         return res.status(400).json({ error: "Quantidade e preço devem ser maiores ou iguais a zero." });
     }
@@ -163,8 +162,8 @@ app.post('/createProduct', async (req: Request, res: any) => {
         const novoProduto = await prisma.produto.create({
             data: {
                 nome,
-                preco,
                 quantidade,
+                preco,
                 idInventarioFK: parseInt(idInventario)
             }
         });
@@ -175,6 +174,21 @@ app.post('/createProduct', async (req: Request, res: any) => {
     }
 });
 
+app.get('/produtos/:idInventario', async (req: Request, res: any) => {
+    const idInventario = parseInt(req.params.idInventario);
+    if (isNaN(idInventario)) {
+        return res.status(400).json({ error: "ID do inventário inválido." });
+    }
+    try {
+        const produtos = await prisma.produto.findMany({
+            where: { idInventarioFK: idInventario }
+        });
+        res.status(200).json({ produtos });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro ao buscar produtos." });
+    }
+});
 
 
 
