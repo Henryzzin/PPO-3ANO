@@ -3,11 +3,13 @@ const sidebar = document.getElementById('sidebar');
 const createBtn = document.getElementById('createInventory');
 const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.querySelector('.main-content h1');
-const deleteBtn = document.getElementById('deleteInventory');
-const items = document.querySelector('.items');
+const deleteInventoryBtn = document.getElementById('deleteInventory');
+const items = document.getElementsByClassName('items');
 const createProductButton = document.getElementById('createProductButton');
 const dialogCreateProduct = document.getElementById('dialogCreateProduct');
 const saveProductButton = document.getElementById('saveProduct');
+const dialogEditProduct = document.getElementById('dialogEditProduct');
+const updateProductButton = document.getElementById('updateProduct');
 
 let selectedInventoryId = null;
 
@@ -27,7 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const inventarios = data.inventarios;
 
       inventoryList.innerHTML = '';
-      inventarios.forEach((inventario) => {
+      inventarios.forEach((inventario, idx) => {
         const a = document.createElement('a');
         a.href = "#";
         a.classList.add('inventory');
@@ -38,8 +40,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Se for o primeiro inventário, já seleciona e mostra os produtos
         if (idx === 0) {
           mainTitle.textContent = inventario.nome;
-          deleteBtn.style.opacity = "1";
-          deleteBtn.style.visibility = "visible";
+          deleteInventoryBtn.style.opacity = "1";
+          deleteInventoryBtn.style.visibility = "visible";
           selectedInventoryId = inventario.id;
           a.classList.add('selected'); // opcional: destaque visual
           renderProducts(selectedInventoryId);
@@ -59,7 +61,7 @@ toggleBtn.addEventListener('click', () => {
   sidebar.classList.toggle('expanded');
 });
 
-function resetInventory {
+async function resetInventory() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const res = await fetch(`/inventarios/${usuario.id}`);
   const data = await res.json();
@@ -147,7 +149,7 @@ inventoryList.addEventListener('dblclick', async (e) => {
   }
 });
 
-deleteBtn.addEventListener('click', async () => {
+deleteInventoryBtn.addEventListener('click', async () => {
   if (!selectedInventoryId) {
     alert("Selecione um inventário para excluir.");
     return;
@@ -168,8 +170,8 @@ deleteBtn.addEventListener('click', async () => {
     } else {
       // Remove da lista e limpa seleção
       mainTitle.textContent = "";
-      deleteBtn.style.opacity = "0";
-      deleteBtn.style.visibility = "hidden";
+      deleteInventoryBtn.style.opacity = "0";
+      deleteInventoryBtn.style.visibility = "hidden";
       selectedInventoryId = null;
       // Recarrega a lista
       resetInventory();
@@ -177,6 +179,38 @@ deleteBtn.addEventListener('click', async () => {
     }
   } catch (error) {
     console.error("Falha ao deletar inventário.", error);
+  }
+});
+
+items.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('deleteProduct') || e.target.id === 'deleteProductImage') {
+    // Se o clique foi na imagem, suba para o botão
+    const btn = e.target.classList.contains('deleteProduct') ? e.target : e.target.closest('.deleteProduct');
+    if (!selectedInventoryId) {
+      alert("Selecione um inventário para excluir.");
+      return;
+    }
+    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+
+    try {
+      const response = await fetch("/deleteProduct", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idProduto: Number(btn.dataset.id) }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao deletar produto.");
+      } else {
+        // Atualiza a lista de produtos
+        await renderProducts(selectedInventoryId);
+        clearProductInputs(); // Limpa os campos de entrada do produto       
+      }
+    } catch (error) {
+      console.error("Falha ao deletar produto.", error);
+    }
   }
 });
 
@@ -200,10 +234,14 @@ async function renderProducts(inventoryId) {
         const productDiv = document.createElement('div');
         productDiv.classList.add('products');
         productDiv.innerHTML = `
-          <p><strong>Nome:</strong> ${product.nome}</p>
-          <p><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>
-          <p><strong>Quantidade:</strong> ${product.quantidade}</p>
-        `;
+          <p class="productInfo"><strong>Nome:</strong> ${product.nome}</p>
+          <p class="productInfo"><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>
+          <p class="productInfo"><strong>Quantidade:</strong> ${product.quantidade}</p>
+          <div class="productActions">
+            <button class="editProduct" data-id="${product.id}"><img src="ImgEditPdct.png" alt="Editar Produto" id="editProductImage"></button>
+            <button class="deleteProduct" data-id="${product.id}"><img src="ImgDeleteInv.png" alt="Deletar Produto" id="deleteProductImage"></button>
+          </div>
+          `;
         items.appendChild(productDiv);
       });
     } else {
@@ -269,8 +307,8 @@ function openProductDialog() {
 inventoryList.addEventListener('click', async (e) => {
   if (e.target.classList.contains('inventory')) {
     mainTitle.textContent = e.target.textContent.replace(" >", "");
-    deleteBtn.style.opacity = "1";
-    deleteBtn.style.visibility = "visible"
+    deleteInventoryBtn.style.opacity = "1";
+    deleteInventoryBtn.style.visibility = "visible"
     selectedInventoryId = e.target.dataset.id;
     await renderProducts(selectedInventoryId);
   }
@@ -279,7 +317,8 @@ inventoryList.addEventListener('click', async (e) => {
 // Evento global para fechar o dialog ao clicar fora dele (opcional)
 window.onclick = function(event) {
   if (event.target == dialogCreateProduct) {
-    dialogCreateProduct.style.display = "none";]
+    dialogCreateProduct.style.display = "none";
     clearProductInputs();
   }
 }
+

@@ -180,7 +180,7 @@ body {
     display: none; /* Initially hidden */
   }
 
-  #saveProduct {
+  .saveProduct {
     width: 100px;
     height: 40px;
     background-color: #4CAF50;
@@ -200,4 +200,53 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+  }
+  
+  .productInfo {
+    color: white;
+    font-size: 14px;
+    margin: 5px 5px;
+  }
+
+  #deleteProductImage {
+    width: 2vh;
+    height: 2vh;
+    background: transparent !important;
+  }
+
+  .deleteProduct {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+
+  #editProductImage {
+    width: 2vh;
+    height: 2vh;
+  }
+
+  .editProduct {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+
+  .productActions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Um botão à esquerda, outro à direita */
+    align-items: flex-end;
+    width: 100%;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    padding: 0 10px 10px 10px;
+    box-sizing: border-box;
+  }
+
+  .products {
+    position: relative;
+    padding-bottom: 45px;
   }

@@ -28,13 +28,19 @@
           <button id="createProductButton">+</button>
         </div>
       </div>
-      <dialog id="dialogCreateProduct">
+      <dialog class="dialog" id="dialogCreateProduct">
         <h2>Adicionar Produto</h2>
         <input type="text" class="productInput" id="productName" placeholder="Nome do Produto" required>
         <input type="number" class="productInput" id="productQuantity" placeholder="Quantidade" required>
         <input type="number" class="productInput" id="productPrice" placeholder="Preço Unitário" required>
-        <button id="saveProduct">Salvar</button>
+        <button class="saveProduct" id="saveProduct">Salvar</button>
       </dialog>
+      <dialog class="dialog" id="dialogEditProduct">
+        <h2>Editar Produto</h2>
+        <input type="text" class="productInput" id="editProductName" placeholder="Nome do Produto" required>
+        <input type="number" class="productInput" id="editProductQuantity" placeholder="Quantidade" required>
+        <input type="number" class="productInput" id="editProductPrice" placeholder="Preço Unitário" required>
+        <button class="saveProduct" id="updateProduct">Salvar</button>
     </div>
 </body>
 <script defer src='inventario.js'></script>

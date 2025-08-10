@@ -190,6 +190,19 @@ app.get('/produtos/:idInventario', async (req: Request, res: any) => {
     }
 });
 
+app.post('/deleteProduct', async (req: Request, res: Response) => {
+    const id = req.body.idProduto;
+
+    try {
+        await prisma.produto.delete({
+            where: { id: parseInt(id) },
+        });
+        res.status(200).json({ message: "Produto excluído com sucesso!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro ao excluir produto." });
+    }
+});
 
 
 
