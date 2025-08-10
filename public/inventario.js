@@ -4,12 +4,18 @@ const createBtn = document.getElementById('createInventory');
 const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.querySelector('.main-content h1');
 const deleteInventoryBtn = document.getElementById('deleteInventory');
-const items = document.getElementsByClassName('items');
+const items = document.querySelector('.items');
 const createProductButton = document.getElementById('createProductButton');
 const dialogCreateProduct = document.getElementById('dialogCreateProduct');
 const saveProductButton = document.getElementById('saveProduct');
 const dialogEditProduct = document.getElementById('dialogEditProduct');
 const updateProductButton = document.getElementById('updateProduct');
+const productName = document.getElementById('productName');
+const productPrice = document.getElementById('productPrice');
+const productQuantity = document.getElementById('productQuantity');
+const editProductName = document.getElementById('editProductName');
+const editProductPrice = document.getElementById('editProductPrice');
+const editProductQuantity = document.getElementById('editProductQuantity');
 
 let selectedInventoryId = null;
 
@@ -214,11 +220,6 @@ items.addEventListener('click', async (e) => {
   }
 });
 
-
-const productName = document.getElementById('productName');
-const productPrice = document.getElementById('productPrice');
-const productQuantity = document.getElementById('productQuantity');
-
 // Função para renderizar produtos
 async function renderProducts(inventoryId) {
   items.innerHTML = `
@@ -259,6 +260,9 @@ function clearProductInputs() {
   productName.value = "";
   productPrice.value = "";
   productQuantity.value = "";
+  editProductName.value = "";
+  editProductPrice.value = "";
+  editProductQuantity.value = "";
 }
 
 // Função para abrir o dialog de produto
@@ -322,3 +326,36 @@ window.onclick = function(event) {
   }
 }
 
+dialogEditProduct.addEventListener('click', (e) => {
+  let idProduto = e.target.classList.contains('editProduct') || e.target.id === 'editProductImage';
+  if (e.target === dialogEditProduct) {
+    dialogEditProduct.style.display = "none";
+    clearProductInputs();
+  }
+});
+
+updateProductButton.addEventListener('click', async () => {
+  dialogEditProduct.style.display="hidden";
+  try{
+    const editName = editProductName.value;
+    const editPrice = parseFloat(editProductPrice.value);
+    const editQuantity = parseInt(editProductQuantity.value);
+
+    const response = await fetch("/editProduct", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+        idProduto: Number(selectedInventoryId), 
+        editName, 
+        editPrice, 
+        editQuantity
+      }),
+    });
+  } catch (error) {
+    console.error("Falha ao editar produto.", error);
+  }
+  clearProductInputs();
+  renderProducts();
+});

@@ -204,6 +204,25 @@ app.post('/deleteProduct', async (req: Request, res: Response) => {
     }
 });
 
+app.post('/editProduct', async (req: Request, res: any) => {
+    const { idProduct, editName, editPrice, editQuantity } = req.body;
+    if( editQuantity < 0 || editPrice < 0) {
+        return res.status(400).json({ error: "Quantidade e preço devem ser maiores ou iguais a zero." });
+    }
+
+    if (!idProduct || !editName) {
+        return res.status(400).json({ error: "ID do produto e nome do produto são obrigatórios." });
+    }
+
+    try{
+        const editProduct = await prisma.produto.update ({
+            where:
+        })
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro ao editar produto." });
+    }
+});
 
 
 
