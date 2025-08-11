@@ -164,7 +164,7 @@ body {
     border-radius: 10px;
   }
 
-  #dialogCreateProduct {
+  .dialog {
     position: fixed;
     width: 400px;
     height: 300px;

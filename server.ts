@@ -216,8 +216,15 @@ app.post('/editProduct', async (req: Request, res: any) => {
 
     try{
         const editProduct = await prisma.produto.update ({
-            where:
-        })
+            where: { id: parseInt(idProduct) },
+            data: {
+                nome: editName,
+                preco: editPrice,
+                quantidade: editQuantity,
+                updatedAt: new Date()
+            }
+        });
+        res.status(200).json({ message: "Produto editado com sucesso!", produto: editProduct });                    
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Erro ao editar produto." });

@@ -4,7 +4,8 @@
   "description": "StockMaster - project",
   "main": "server.js",
   "scripts": {
-    "start": "npx ts-node server.ts"
+    "start": "npx ts-node server.ts",
+    "start:dev": "npm i && npx prisma migrate dev && npx ts-node server.ts"
   },
   "author": "henryzzin",
   "license": "ISC",

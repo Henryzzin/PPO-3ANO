@@ -5,6 +5,7 @@ const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.querySelector('.main-content h1');
 const deleteInventoryBtn = document.getElementById('deleteInventory');
 const items = document.querySelector('.items');
+const createProduct = document.querySelector('.createProduct');
 const createProductButton = document.getElementById('createProductButton');
 const dialogCreateProduct = document.getElementById('dialogCreateProduct');
 const saveProductButton = document.getElementById('saveProduct');
@@ -17,6 +18,7 @@ const editProductName = document.getElementById('editProductName');
 const editProductPrice = document.getElementById('editProductPrice');
 const editProductQuantity = document.getElementById('editProductQuantity');
 
+let selectedProductId = null;
 let selectedInventoryId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -317,19 +319,21 @@ inventoryList.addEventListener('click', async (e) => {
     await renderProducts(selectedInventoryId);
   }
 });
+// Evento global para fechar o dialog ao clicar fora dele
+// window.onclick = function(event) {
+//   if(event.target === createProduct) return;
 
-// Evento global para fechar o dialog ao clicar fora dele (opcional)
-window.onclick = function(event) {
-  if (event.target == dialogCreateProduct) {
-    dialogCreateProduct.style.display = "none";
-    clearProductInputs();
-  }
-}
+//   if (event.target !== dialogCreateProduct) {
+//     dialogCreateProduct.style.display = "none";  ARRUMAR ISSO
+//     dialogEditProduct.style.display = "none";
+//     clearProductInputs();
+//   }
+// }
 
 dialogEditProduct.addEventListener('click', (e) => {
-  let idProduto = e.target.classList.contains('editProduct') || e.target.id === 'editProductImage';
+  selectedProductId = e.target.classList.contains('editProduct') || e.target.id === 'editProductImage';
   if (e.target === dialogEditProduct) {
-    dialogEditProduct.style.display = "none";
+    dialogEditProduct.style.display = "block";
     clearProductInputs();
   }
 });
@@ -347,15 +351,20 @@ updateProductButton.addEventListener('click', async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ 
-        idProduto: Number(selectedInventoryId), 
+        idProduto: Number(idProduto), 
         editName, 
         editPrice, 
         editQuantity
       }),
     });
+    if(!response.ok){
+      throw new Error ("Erro ao editar produto.");
+    } else {
+      clearProductInputs();
+      renderProducts();
+      selectedProductId = null;
+    }
   } catch (error) {
     console.error("Falha ao editar produto.", error);
   }
-  clearProductInputs();
-  renderProducts();
 });
