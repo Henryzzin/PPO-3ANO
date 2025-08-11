@@ -5,6 +5,7 @@ const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.querySelector('.main-content h1');
 const deleteInventoryBtn = document.getElementById('deleteInventory');
 const items = document.querySelector('.items');
+const overlay = document.querySelectorAll('.overlay');
 const createProduct = document.querySelector('.createProduct');
 const createProductButton = document.getElementById('createProductButton');
 const dialogCreateProduct = document.getElementById('dialogCreateProduct');
@@ -273,6 +274,7 @@ function clearProductInputs() {
 // Função para abrir o dialog de produto
 function openProductDialog() {
   dialogCreateProduct.style.display = "block";
+  overlay.classList.add("darkBackground");
   // Remove event listeners antigos antes de adicionar um novo
   saveProductButton.onclick = async () => {
     dialogCreateProduct.style.display = "none";
@@ -320,6 +322,8 @@ closeDialog.forEach(button => {
       dialogEditProduct.style.display = "none";
     }
     clearProductInputs();
+    dialog.classList.remove("darkBackground");
+    selectedProductId = null; 
   });
 });
 
