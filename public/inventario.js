@@ -17,6 +17,7 @@ const productQuantity = document.getElementById('productQuantity');
 const editProductName = document.getElementById('editProductName');
 const editProductPrice = document.getElementById('editProductPrice');
 const editProductQuantity = document.getElementById('editProductQuantity');
+const closeDialog = document.querySelectorAll('.closeDialog');
 
 let selectedProductId = null;
 let selectedInventoryId = null;
@@ -83,6 +84,8 @@ async function resetInventory() {
     inventoryList.appendChild(a);
 });
 }
+
+
 
 // Criar novo inventário
 createBtn.addEventListener('click', async () => {
@@ -309,6 +312,17 @@ function openProductDialog() {
   };
 }
 
+closeDialog.forEach(button => {
+  button.addEventListener('click', () => {
+    if (button.id === 'closeDialogCreateProduct') {
+      dialogCreateProduct.style.display = "none";
+    } else if (button.id === 'closeDialogEditProduct') {
+      dialogEditProduct.style.display = "none";
+    }
+    clearProductInputs();
+  });
+});
+
 // Evento de clique no inventário
 inventoryList.addEventListener('click', async (e) => {
   if (e.target.classList.contains('inventory')) {
@@ -319,16 +333,6 @@ inventoryList.addEventListener('click', async (e) => {
     await renderProducts(selectedInventoryId);
   }
 });
-// Evento global para fechar o dialog ao clicar fora dele
-// window.onclick = function(event) {
-//   if(event.target === createProduct) return;
-
-//   if (event.target !== dialogCreateProduct) {
-//     dialogCreateProduct.style.display = "none";  ARRUMAR ISSO
-//     dialogEditProduct.style.display = "none";
-//     clearProductInputs();
-//   }
-// }
 
 dialogEditProduct.addEventListener('click', (e) => {
   selectedProductId = e.target.classList.contains('editProduct') || e.target.id === 'editProductImage';
