@@ -72,13 +72,14 @@ app.post('/login', async (req: Request, res: any) => {
 
 
 app.post('/inventario', async (req: Request, res: any) => {
-    const { nome, idUsuario } = req.body;
+    const { nome, idUsuario, semPreco } = req.body;
 
     try {
         const novoInventario = await prisma.inventario.create({
             data: {
                 nome,
-                idUsuarioFK: idUsuario
+                idUsuarioFK: idUsuario,
+                semPreco: semPreco || false
             }
         });
         res.status(201).json({ message: "Inventário criado com sucesso!", inventario: novoInventario });
@@ -180,10 +181,25 @@ app.get('/produtos/:idInventario', async (req: Request, res: any) => {
         return res.status(400).json({ error: "ID do inventário inválido." });
     }
     try {
-        const produtos = await prisma.produto.findMany({
-            where: { idInventarioFK: idInventario }
+        const inventario = await prisma.inventario.findUnique({
+            where: { id: idInventario },
+            include: {
+                produtos: true
+            }
         });
-        res.status(200).json({ produtos });
+        
+        if (!inventario) {
+            return res.status(404).json({ error: "Inventário não encontrado." });
+        }
+        
+        res.status(200).json({ 
+            produtos: inventario.produtos, 
+            inventario: {
+                id: inventario.id,
+                nome: inventario.nome,
+                semPreco: inventario.semPreco
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Erro ao buscar produtos." });

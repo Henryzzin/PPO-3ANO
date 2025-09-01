@@ -71,11 +71,7 @@
         
         <section class="products-section" aria-label="Lista de produtos">
             <div class="items" id="itemsGrid">
-                <div class="create-product-card">
-                    <button id="createProductButton" class="create-product-btn" aria-label="Adicionar novo produto" title="Adicionar produto">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                </div>
+                <!-- O botão de criar produto será adicionado dinamicamente pelo JavaScript quando um inventário for selecionado -->
             </div>
         </section>
     </main>
@@ -146,6 +142,7 @@
     </dialog>
     
     <!-- Modal: Editar Produto -->
+        <!-- Modal: Editar Produto -->
     <dialog class="modal-dialog" id="dialogEditProduct" aria-labelledby="editProductTitle" role="dialog">
         <div class="modal-content">
             <header class="modal-header">
@@ -205,6 +202,51 @@
                 <button type="submit" class="btn btn-primary save-product-btn" id="updateProduct" form="editProductForm">
                     <i class="bi bi-check-lg"></i>
                     Salvar Alterações
+                </button>
+            </footer>
+        </div>
+    </dialog>
+    
+    <!-- Modal: Criar Inventário -->
+    <dialog class="modal-dialog" id="dialogCreateInventory" aria-labelledby="createInventoryTitle" role="dialog">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2 id="createInventoryTitle" class="modal-title">Criar Inventário</h2>
+                <button class="btn-close" id="closeDialogCreateInventory" aria-label="Fechar modal" title="Fechar">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </header>
+            
+            <form class="modal-body" id="createInventoryForm">
+                <div class="form-floating mb-3">
+                    <input 
+                        type="text" 
+                        class="form-control product-input" 
+                        id="inventoryName" 
+                        placeholder="Nome do Inventário" 
+                        required
+                        autocomplete="off"
+                    >
+                    <label for="inventoryName">Nome do Inventário</label>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="noPriceCheckbox"
+                    >
+                    <label class="form-check-label" for="noPriceCheckbox">
+                        <strong>Não incluir preços</strong> - Os produtos deste inventário não terão campos de preço
+                    </label>
+                </div>
+            </form>
+            
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelCreateInventory">Cancelar</button>
+                <button type="submit" class="btn btn-primary save-product-btn" id="saveInventory" form="createInventoryForm">
+                    <i class="bi bi-check-lg"></i>
+                    Criar
                 </button>
             </footer>
         </div>

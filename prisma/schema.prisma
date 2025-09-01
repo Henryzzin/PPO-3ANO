@@ -25,6 +25,7 @@ model Usuario {
 model Inventario {
   id              Int       @id @default(autoincrement())
   nome            String
+  semPreco        Boolean   @default(false)
   idUsuarioFK     Int
   idUsuario       Usuario    @relation(fields: [idUsuarioFK], references: [id])
   produtos        Produto[]
@@ -39,7 +40,7 @@ model Produto {
   quantidade      Int @default(0)
   preco           Float 
   idInventarioFK  Int
-  idInventario    Inventario @relation(fields: [idInventarioFK], references: [id])
+  idInventario    Inventario @relation(fields: [idInventarioFK], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }

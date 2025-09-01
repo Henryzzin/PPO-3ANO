@@ -10,13 +10,17 @@ const createProductButton = document.getElementById('createProductButton');
 const dialogCreateProduct = document.getElementById('dialogCreateProduct');
 const saveProductButton = document.getElementById('saveProduct');
 const dialogEditProduct = document.getElementById('dialogEditProduct');
+const dialogCreateInventory = document.getElementById('dialogCreateInventory');
 const updateProductButton = document.getElementById('updateProduct');
+const saveInventoryButton = document.getElementById('saveInventory');
 const productName = document.getElementById('productName');
 const productPrice = document.getElementById('productPrice');
 const productQuantity = document.getElementById('productQuantity');
 const editProductName = document.getElementById('editProductName');
 const editProductPrice = document.getElementById('editProductPrice');
 const editProductQuantity = document.getElementById('editProductQuantity');
+const inventoryNameInput = document.getElementById('inventoryName');
+const noPriceCheckbox = document.getElementById('noPriceCheckbox');
 const closeDialogButtons = document.querySelectorAll('.btn-close');
 
 let selectedProductId = null;
@@ -38,24 +42,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       const inventarios = data.inventarios;
 
       inventoryList.innerHTML = '';
-      inventarios.forEach((inventario, idx) => {
-        const a = document.createElement('a');
-        a.href = "#";
-        a.classList.add('inventory');
-        a.textContent = inventario.nome + " >";
-        a.dataset.id = inventario.id;
-        inventoryList.appendChild(a);
-
-        // Se for o primeiro inventário, já seleciona e mostra os produtos
-        if (idx === 0) {
-          mainTitle.textContent = inventario.nome;
-          deleteInventoryBtn.style.opacity = "1";
-          deleteInventoryBtn.style.visibility = "visible";
-          selectedInventoryId = inventario.id;
-          a.classList.add('selected'); // opcional: destaque visual
-          renderProducts(selectedInventoryId);
-        }
-      });
+      
+      if (inventarios.length === 0) {
+        // Se não há inventários, mostra mensagem e limpa a área de produtos
+        mainTitle.textContent = "Nenhum inventário encontrado. Crie seu primeiro inventário!";
+        deleteInventoryBtn.style.opacity = "0";
+        deleteInventoryBtn.style.visibility = "hidden";
+        selectedInventoryId = null;
+        renderProducts(null); // Limpa a área e não mostra botão de criar produto
+      } else {
+        // Se há inventários, lista eles mas não seleciona automaticamente
+        inventarios.forEach((inventario) => {
+          const a = document.createElement('a');
+          a.href = "#";
+          a.classList.add('inventory');
+          a.textContent = inventario.nome + " >";
+          a.dataset.id = inventario.id;
+          inventoryList.appendChild(a);
+        });
+        
+        // Não seleciona automaticamente, deixa o usuário escolher
+        mainTitle.textContent = "Selecione um inventário";
+        deleteInventoryBtn.style.opacity = "0";
+        deleteInventoryBtn.style.visibility = "hidden";
+        selectedInventoryId = null;
+        renderProducts(null); // Não mostra botão de criar produto até selecionar inventário
+      }
     } else {
       console.error("Erro ao carregar inventários:", data.error);
     }
@@ -75,29 +87,61 @@ async function resetInventory() {
   const res = await fetch(`/inventarios/${usuario.id}`);
   const data = await res.json();
   inventoryList.innerHTML = '';
-  data.inventarios.forEach((inventario) => {
-    const a = document.createElement('a');
-    a.href = "#";
-    a.classList.add('inventory');
-    a.textContent = inventario.nome + " >";
-    a.dataset.id = inventario.id;
-    inventoryList.appendChild(a);
-});
+  
+  if (data.inventarios.length === 0) {
+    // Se não há inventários, mostra mensagem e limpa a área de produtos
+    mainTitle.textContent = "Nenhum inventário encontrado. Crie seu primeiro inventário!";
+    deleteInventoryBtn.style.opacity = "0";
+    deleteInventoryBtn.style.visibility = "hidden";
+    selectedInventoryId = null;
+    renderProducts(null);
+  } else {
+    // Lista os inventários sem selecionar automaticamente
+    data.inventarios.forEach((inventario) => {
+      const a = document.createElement('a');
+      a.href = "#";
+      a.classList.add('inventory');
+      a.textContent = inventario.nome + " >";
+      a.dataset.id = inventario.id;
+      inventoryList.appendChild(a);
+    });
+    
+    // Se não há inventário selecionado, mostra mensagem padrão
+    if (!selectedInventoryId) {
+      mainTitle.textContent = "Selecione um inventário";
+      deleteInventoryBtn.style.opacity = "0";
+      deleteInventoryBtn.style.visibility = "hidden";
+      renderProducts(null);
+    }
+  }
 }
 
 
 
 // Criar novo inventário
-createBtn.addEventListener('click', async () => {
-  const usuario = JSON.parse(localStorage.getItem("usuario")); // Recupera o usuário do localStorage
+createBtn.addEventListener('click', () => {
+  dialogCreateInventory.style.display = "block";
+  overlay.classList.add("show");
+  document.body.classList.add("modal-open");
+  inventoryNameInput.focus();
+});
+
+// Salvar inventário
+saveInventoryButton.addEventListener('click', async () => {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   if (!usuario) {
       alert("Usuário não autenticado!");
       return;
   }
 
-  const invName = prompt("Digite o nome do novo inventário:");
-  if (!invName) return;
+  const invName = inventoryNameInput.value.trim();
+  if (!invName) {
+    alert("Digite um nome para o inventário!");
+    return;
+  }
+
+  const semPreco = noPriceCheckbox.checked;
 
   try {
     const response = await fetch("/inventario", {
@@ -105,17 +149,34 @@ createBtn.addEventListener('click', async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ nome: invName, idUsuario: usuario.id }),
+      body: JSON.stringify({ 
+        nome: invName, 
+        idUsuario: usuario.id,
+        semPreco: semPreco
+      }),
     });
 
     if(!response.ok) {
       throw new Error("Erro ao criar inventário.")
     } else {
-      resetInventory();
+      dialogCreateInventory.style.display = "none";
+      overlay.classList.remove("show");
+      document.body.classList.remove("modal-open");
+      inventoryNameInput.value = "";
+      
+      await resetInventory();
       renderProducts(null); // Limpa a lista de produtos
+      
+      // Seleciona o novo inventário criado (último da lista)
+      const inventoryElements = document.querySelectorAll('.inventory');
+      if (inventoryElements.length > 0) {
+        const lastInventory = inventoryElements[inventoryElements.length - 1];
+        lastInventory.click(); // Simula clique para selecionar
+      }
     }
   } catch (error) {
     console.error("Falha ao criar inventário.", error);
+    alert("Erro ao criar inventário!");
   }
 });
 
@@ -179,14 +240,28 @@ deleteInventoryBtn.addEventListener('click', async () => {
     if (!response.ok) {
       throw new Error("Erro ao deletar inventário.");
     } else {
-      // Remove da lista e limpa seleção
-      mainTitle.textContent = "";
-      deleteInventoryBtn.style.opacity = "0";
-      deleteInventoryBtn.style.visibility = "hidden";
-      selectedInventoryId = null;
-      // Recarrega a lista
-      resetInventory();
-      renderProducts(null); // Limpa a lista de produtos
+      await resetInventory();
+      
+      const inventoryElements = document.querySelectorAll('.inventory');
+      
+      if (inventoryElements.length > 0) {
+        const firstInventory = inventoryElements[0];
+        firstInventory.classList.add('selected');
+        
+        mainTitle.textContent = firstInventory.textContent.replace(" >", "");
+        selectedInventoryId = firstInventory.dataset.id;
+        
+        await renderProducts(selectedInventoryId);
+        
+        deleteInventoryBtn.style.opacity = "1";
+        deleteInventoryBtn.style.visibility = "visible";
+      } else {
+        mainTitle.textContent = "Nenhum inventário selecionado";
+        deleteInventoryBtn.style.opacity = "0";
+        deleteInventoryBtn.style.visibility = "hidden";
+        selectedInventoryId = null;
+        renderProducts(null);
+      }
     }
   } catch (error) {
     console.error("Falha ao deletar inventário.", error);
@@ -227,6 +302,13 @@ items.addEventListener('click', async (e) => {
 
 // Função para renderizar produtos
 async function renderProducts(inventoryId) {
+  // Se não há inventário selecionado, limpa a área e não mostra o botão
+  if (!inventoryId) {
+    items.innerHTML = '';
+    return;
+  }
+  
+  // Se há inventário selecionado, mostra o botão de criar produto
   items.innerHTML = `
     <div class="create-product-card">
       <button id="createProductButton" class="create-product-btn" aria-label="Adicionar novo produto" title="Adicionar produto">
@@ -234,24 +316,42 @@ async function renderProducts(inventoryId) {
       </button>
     </div>
   `;
+  
   try {
     const response = await fetch(`/produtos/${inventoryId}`);
     const data = await response.json();
     if (response.ok) {
+      const inventario = data.inventario;
+      const semPreco = inventario?.semPreco || false;
+      
       data.produtos.forEach((product) => {
         const productDiv = document.createElement('div');
         productDiv.classList.add('product-card');
-        productDiv.innerHTML = `
+        
+        // Constrói o HTML baseado na configuração de preço
+        let productHTML = `
           <p class="product-info"><strong>Nome:</strong> ${product.nome}</p>
-          <p class="product-info"><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>
+        `;
+        
+        if (!semPreco) {
+          productHTML += `<p class="product-info"><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>`;
+        }
+        
+        productHTML += `
           <p class="product-info"><strong>Quantidade:</strong> ${product.quantidade}</p>
           <div class="product-actions">
             <button class="edit-product" data-id="${product.id}"><img src="ImgEditPdct.png" alt="Editar Produto" class="edit-product-image"></button>
             <button class="delete-product" data-id="${product.id}"><img src="ImgDeleteInv.png" alt="Deletar Produto" class="delete-product-image"></button>
           </div>
-          `;
+        `;
+        
+        productDiv.innerHTML = productHTML;
         items.appendChild(productDiv);
       });
+      
+      // Atualiza os modais de produto baseado na configuração
+      updateProductModalsForInventory(semPreco);
+      
     } else {
       console.error("Erro ao carregar produtos:", data.error);
     }
@@ -263,6 +363,31 @@ async function renderProducts(inventoryId) {
   document.getElementById('createProductButton').onclick = openProductDialog;
 }
 
+// Função para atualizar os modais baseado na configuração do inventário
+function updateProductModalsForInventory(semPreco) {
+  // Elementos de preço nos modais
+  const productPriceContainer = document.getElementById('productPrice')?.closest('.col-md-6');
+  const editProductPriceContainer = document.getElementById('editProductPrice')?.closest('.col-md-6');
+  
+  if (semPreco) {
+    // Esconder campos de preço
+    if (productPriceContainer) productPriceContainer.style.display = 'none';
+    if (editProductPriceContainer) editProductPriceContainer.style.display = 'none';
+    
+    // Remover required dos campos de preço
+    if (productPrice) productPrice.removeAttribute('required');
+    if (editProductPrice) editProductPrice.removeAttribute('required');
+  } else {
+    // Mostrar campos de preço
+    if (productPriceContainer) productPriceContainer.style.display = 'block';
+    if (editProductPriceContainer) editProductPriceContainer.style.display = 'block';
+    
+    // Adicionar required aos campos de preço
+    if (productPrice) productPrice.setAttribute('required', '');
+    if (editProductPrice) editProductPrice.setAttribute('required', '');
+  }
+}
+
 function clearProductInputs() {
   productName.value = "";
   productPrice.value = "";
@@ -270,22 +395,35 @@ function clearProductInputs() {
   editProductName.value = "";
   editProductPrice.value = "";
   editProductQuantity.value = "";
+  inventoryNameInput.value = "";
+  noPriceCheckbox.checked = false;
 }
 
 // Função para abrir o dialog de produto
 function openProductDialog() {
   dialogCreateProduct.style.display = "block";
   overlay.classList.add("show");
+  document.body.classList.add("modal-open");
   // Remove event listeners antigos antes de adicionar um novo
   saveProductButton.onclick = async () => {
     dialogCreateProduct.style.display = "none";
     overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
     try {
       const nome = productName.value;
-      const preco = parseFloat(productPrice.value);
       const quantidade = parseInt(productQuantity.value);
+      
+      // Verifica se o preço deve ser usado ou se é um inventário sem preço
+      const precoValue = productPrice.value;
+      const preco = precoValue && precoValue.trim() !== '' ? parseFloat(precoValue) : 0;
 
-      if (!nome || isNaN(preco) || preco < 0 || isNaN(quantidade) || quantidade < 0) {
+      if (!nome || isNaN(quantidade) || quantidade < 0) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+      }
+      
+      // Só valida preço se o campo estiver visível e obrigatório
+      if (productPrice.hasAttribute('required') && (isNaN(preco) || preco < 0)) {
         alert("Preencha todos os campos corretamente!");
         return;
       } 
@@ -322,9 +460,12 @@ closeDialogButtons.forEach(button => {
       dialogCreateProduct.style.display = "none";
     } else if (button.id === 'closeDialogEditProduct') {
       dialogEditProduct.style.display = "none";
+    } else if (button.id === 'closeDialogCreateInventory') {
+      dialogCreateInventory.style.display = "none";
     }
     clearProductInputs();
     overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
     selectedProductId = null; 
   });
 });
@@ -361,6 +502,7 @@ items.addEventListener('click', async (e) => {
           // Mostrar o modal primeiro
           dialogEditProduct.style.display = "block";
           overlay.classList.add("show");
+          document.body.classList.add("modal-open");
           
           // Aguardar um momento e então preencher os campos
           setTimeout(() => {
@@ -384,10 +526,19 @@ items.addEventListener('click', async (e) => {
 updateProductButton.addEventListener('click', async () => {
   try {
     const editName = editProductName.value;
-    const editPrice = parseFloat(editProductPrice.value);
     const editQuantity = parseInt(editProductQuantity.value);
+    
+    // Verifica se o preço deve ser usado ou se é um inventário sem preço
+    const editPriceValue = editProductPrice.value;
+    const editPrice = editPriceValue && editPriceValue.trim() !== '' ? parseFloat(editPriceValue) : 0;
 
-    if (!editName || isNaN(editPrice) || editPrice < 0 || isNaN(editQuantity) || editQuantity < 0) {
+    if (!editName || isNaN(editQuantity) || editQuantity < 0) {
+      alert("Preencha todos os campos corretamente!");
+      return;
+    }
+    
+    // Só valida preço se o campo estiver visível e obrigatório
+    if (editProductPrice.hasAttribute('required') && (isNaN(editPrice) || editPrice < 0)) {
       alert("Preencha todos os campos corretamente!");
       return;
     }
@@ -410,6 +561,7 @@ updateProductButton.addEventListener('click', async () => {
     } else {
       dialogEditProduct.style.display = "none";
       overlay.classList.remove("show");
+      document.body.classList.remove("modal-open");
       clearProductInputs();
       await renderProducts(selectedInventoryId);
       selectedProductId = null;
@@ -423,21 +575,32 @@ updateProductButton.addEventListener('click', async () => {
 document.getElementById('cancelCreateProduct')?.addEventListener('click', () => {
   dialogCreateProduct.style.display = "none";
   overlay.classList.remove("show");
+  document.body.classList.remove("modal-open");
   clearProductInputs();
 });
 
 document.getElementById('cancelEditProduct')?.addEventListener('click', () => {
   dialogEditProduct.style.display = "none";
   overlay.classList.remove("show");
+  document.body.classList.remove("modal-open");
   clearProductInputs();
   selectedProductId = null;
+});
+
+document.getElementById('cancelCreateInventory')?.addEventListener('click', () => {
+  dialogCreateInventory.style.display = "none";
+  overlay.classList.remove("show");
+  document.body.classList.remove("modal-open");
+  clearProductInputs();
 });
 
 // Fechar modais ao clicar no overlay
 overlay.addEventListener('click', () => {
   dialogCreateProduct.style.display = "none";
   dialogEditProduct.style.display = "none";
+  dialogCreateInventory.style.display = "none";
   overlay.classList.remove("show");
+  document.body.classList.remove("modal-open");
   clearProductInputs();
   selectedProductId = null;
 });
