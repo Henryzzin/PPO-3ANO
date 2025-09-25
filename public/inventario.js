@@ -4,8 +4,9 @@ const createBtn = document.getElementById('createInventory');
 const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.getElementById('inventoryTitle');
 const deleteInventoryBtn = document.getElementById('deleteInventory');
-const items = document.getElementById('itemsGrid');
-const overlay = document.getElementById('modalOverlay');
+const items = document.querySelector('.items');
+const overlay = document.querySelector('.overlay');
+const createProduct = document.querySelector('.createProduct');
 const createProductButton = document.getElementById('createProductButton');
 const dialogCreateProduct = document.getElementById('dialogCreateProduct');
 const saveProductButton = document.getElementById('saveProduct');
@@ -87,36 +88,15 @@ async function resetInventory() {
   const res = await fetch(`/inventarios/${usuario.id}`);
   const data = await res.json();
   inventoryList.innerHTML = '';
-  
-  if (data.inventarios.length === 0) {
-    // Se não há inventários, mostra mensagem e limpa a área de produtos
-    mainTitle.textContent = "Nenhum inventário encontrado. Crie seu primeiro inventário!";
-    deleteInventoryBtn.style.opacity = "0";
-    deleteInventoryBtn.style.visibility = "hidden";
-    selectedInventoryId = null;
-    renderProducts(null);
-  } else {
-    // Lista os inventários sem selecionar automaticamente
-    data.inventarios.forEach((inventario) => {
-      const a = document.createElement('a');
-      a.href = "#";
-      a.classList.add('inventory');
-      a.textContent = inventario.nome + " >";
-      a.dataset.id = inventario.id;
-      inventoryList.appendChild(a);
-    });
-    
-    // Se não há inventário selecionado, mostra mensagem padrão
-    if (!selectedInventoryId) {
-      mainTitle.textContent = "Selecione um inventário";
-      deleteInventoryBtn.style.opacity = "0";
-      deleteInventoryBtn.style.visibility = "hidden";
-      renderProducts(null);
-    }
-  }
+  data.inventarios.forEach((inventario) => {
+    const a = document.createElement('a');
+    a.href = "#";
+    a.classList.add('inventory');
+    a.textContent = inventario.nome + " >";
+    a.dataset.id = inventario.id;
+    inventoryList.appendChild(a);
+});
 }
-
-
 
 // Criar novo inventário
 createBtn.addEventListener('click', () => {
@@ -228,7 +208,7 @@ deleteInventoryBtn.addEventListener('click', async () => {
   }
   if (!confirm("Tem certeza que deseja excluir este inventário?")) return;
 
-  try {
+  try { 
     const response = await fetch("/deleteInventario", {
       method: "POST",
       headers: {
@@ -269,7 +249,7 @@ deleteInventoryBtn.addEventListener('click', async () => {
 });
 
 items.addEventListener('click', async (e) => {
-  if (e.target.classList.contains('delete-product') || e.target.classList.contains('delete-product-image')) {
+  if (e.target.classList.contains('deleteProduct') || e.target.classList.contains('deleteProductImage')) {
     // Se o clique foi na imagem, suba para o botão
     const btn = e.target.classList.contains('delete-product') ? e.target : e.target.closest('.delete-product');
     if (!selectedInventoryId) {
@@ -297,6 +277,24 @@ items.addEventListener('click', async (e) => {
     } catch (error) {
       console.error("Falha ao deletar produto.", error);
     }
+  }
+  // Adiciona funcionalidade para editar produto
+  if (e.target.classList.contains('editProduct') || e.target.classList.contains('editProductImage')) {
+    const btn = e.target.classList.contains('editProduct') ? e.target : e.target.closest('.editProduct');
+    const idProduto = btn.dataset.id;
+    // Buscar dados do produto na lista renderizada
+    const productDiv = btn.closest('.products');
+    const nome = productDiv.querySelector('.productInfo:nth-child(1)').textContent.replace('Nome:', '').trim();
+    const preco = productDiv.querySelector('.productInfo:nth-child(2)').textContent.replace('Preço:', '').replace('R$', '').trim();
+    const quantidade = productDiv.querySelector('.productInfo:nth-child(3)').textContent.replace('Quantidade:', '').trim();
+
+    editProductName.value = nome;
+    editProductPrice.value = preco;
+    editProductQuantity.value = quantidade;
+    window.idProduto = idProduto; // para uso no update
+    dialogEditProduct.style.display = "block";
+    const overlay = document.querySelector('.overlay');
+    if (overlay) overlay.classList.add("darkBackground");
   }
 });
 
@@ -326,22 +324,16 @@ async function renderProducts(inventoryId) {
       
       data.produtos.forEach((product) => {
         const productDiv = document.createElement('div');
-        productDiv.classList.add('product-card');
-        
-        // Constrói o HTML baseado na configuração de preço
-        let productHTML = `
-          <p class="product-info"><strong>Nome:</strong> ${product.nome}</p>
-        `;
-        
-        if (!semPreco) {
-          productHTML += `<p class="product-info"><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>`;
-        }
-        
-        productHTML += `
-          <p class="product-info"><strong>Quantidade:</strong> ${product.quantidade}</p>
-          <div class="product-actions">
-            <button class="edit-product" data-id="${product.id}"><img src="ImgEditPdct.png" alt="Editar Produto" class="edit-product-image"></button>
-            <button class="delete-product" data-id="${product.id}"><img src="ImgDeleteInv.png" alt="Deletar Produto" class="delete-product-image"></button>
+        productDiv.classList.add('products');
+        productDiv.innerHTML = `
+          <div class="productContent">
+            <p class="productInfo"><span class="product-name-label">Nome:</span> ${product.nome}</p>
+            <p class="productInfo"><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>
+            <p class="productInfo"><strong>Quantidade:</strong> ${product.quantidade}</p>
+          </div>
+          <div class="productActions">
+            <button class="editProduct" data-id="${product.id}"><img src="ImgEditPdct.png" alt="Editar Produto" class="editProductImage"></button>
+            <button class="deleteProduct" data-id="${product.id}"><img src="ImgDeleteInv.png" alt="Deletar Produto" class="deleteProductImage"></button>
           </div>
         `;
         
@@ -402,8 +394,8 @@ function clearProductInputs() {
 // Função para abrir o dialog de produto
 function openProductDialog() {
   dialogCreateProduct.style.display = "block";
-  overlay.classList.add("show");
-  document.body.classList.add("modal-open");
+  const overlay = document.querySelector('.overlay');
+  if (overlay) overlay.classList.add("darkBackground");
   // Remove event listeners antigos antes de adicionar um novo
   saveProductButton.onclick = async () => {
     dialogCreateProduct.style.display = "none";
@@ -463,19 +455,22 @@ closeDialogButtons.forEach(button => {
     } else if (button.id === 'closeDialogCreateInventory') {
       dialogCreateInventory.style.display = "none";
     }
-    clearProductInputs();
-    overlay.classList.remove("show");
-    document.body.classList.remove("modal-open");
-    selectedProductId = null; 
+  clearProductInputs();
+  const overlay = document.querySelector('.overlay');
+  if (overlay) overlay.classList.remove("darkBackground");
+  selectedProductId = null; 
   });
 });
 
 // Evento de clique no inventário
 inventoryList.addEventListener('click', async (e) => {
   if (e.target.classList.contains('inventory')) {
-    // Remove seleção anterior
-    document.querySelectorAll('.inventory.selected').forEach(inv => inv.classList.remove('selected'));
-    // Adiciona seleção ao atual
+    // Remove a classe 'selected' de todos os inventários
+    document.querySelectorAll('.inventory').forEach(inv => {
+      inv.classList.remove('selected');
+    });
+    
+    // Adiciona a classe 'selected' ao inventário clicado
     e.target.classList.add('selected');
     
     mainTitle.textContent = e.target.textContent.replace(" >", "");
@@ -486,62 +481,22 @@ inventoryList.addEventListener('click', async (e) => {
   }
 });
 
-// Eventos para editar produto
-items.addEventListener('click', async (e) => {
-  if (e.target.classList.contains('edit-product') || e.target.classList.contains('edit-product-image')) {
-    const btn = e.target.classList.contains('edit-product') ? e.target : e.target.closest('.edit-product');
-    selectedProductId = btn.dataset.id;
-    
-    // Buscar dados do produto atual
-    try {
-      const response = await fetch(`/produtos/${selectedInventoryId}`);
-      const data = await response.json();
-      if (response.ok) {
-        const product = data.produtos.find(p => p.id == selectedProductId);
-        if (product) {
-          // Mostrar o modal primeiro
-          dialogEditProduct.style.display = "block";
-          overlay.classList.add("show");
-          document.body.classList.add("modal-open");
-          
-          // Aguardar um momento e então preencher os campos
-          setTimeout(() => {
-            editProductName.value = product.nome;
-            editProductPrice.value = product.preco;
-            editProductQuantity.value = product.quantidade;
-            
-            // Disparar evento input para ativar os floating labels
-            editProductName.dispatchEvent(new Event('input', { bubbles: true }));
-            editProductPrice.dispatchEvent(new Event('input', { bubbles: true }));
-            editProductQuantity.dispatchEvent(new Event('input', { bubbles: true }));
-          }, 50);
-        }
-      }
-    } catch (error) {
-      console.error("Erro ao buscar produto:", error);
-    }
+dialogEditProduct.addEventListener('click', (e) => {
+  selectedProductId = e.target.classList.contains('editProduct') || e.target.classList.contains('editProductImage');
+  if (e.target === dialogEditProduct) {
+    dialogEditProduct.style.display = "block";
+    clearProductInputs();
   }
 });
 
 updateProductButton.addEventListener('click', async () => {
+  dialogEditProduct.style.display = "none";
+  const overlay = document.querySelector('.overlay');
+  if (overlay) overlay.classList.remove("darkBackground");
   try {
     const editName = editProductName.value;
     const editQuantity = parseInt(editProductQuantity.value);
-    
-    // Verifica se o preço deve ser usado ou se é um inventário sem preço
-    const editPriceValue = editProductPrice.value;
-    const editPrice = editPriceValue && editPriceValue.trim() !== '' ? parseFloat(editPriceValue) : 0;
-
-    if (!editName || isNaN(editQuantity) || editQuantity < 0) {
-      alert("Preencha todos os campos corretamente!");
-      return;
-    }
-    
-    // Só valida preço se o campo estiver visível e obrigatório
-    if (editProductPrice.hasAttribute('required') && (isNaN(editPrice) || editPrice < 0)) {
-      alert("Preencha todos os campos corretamente!");
-      return;
-    }
+    const idProduct = window.idProduto;
 
     const response = await fetch("/editProduct", {
       method: "POST",
@@ -549,13 +504,12 @@ updateProductButton.addEventListener('click', async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ 
-        idProduct: Number(selectedProductId), 
+        idProduct: Number(idProduct), 
         editName, 
         editPrice, 
         editQuantity
       }),
     });
-    
     if (!response.ok) {
       throw new Error("Erro ao editar produto.");
     } else {
@@ -563,6 +517,7 @@ updateProductButton.addEventListener('click', async () => {
       overlay.classList.remove("show");
       document.body.classList.remove("modal-open");
       clearProductInputs();
+      await renderProducts(selectedInventoryId);
       await renderProducts(selectedInventoryId);
       selectedProductId = null;
     }

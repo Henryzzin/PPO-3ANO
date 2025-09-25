@@ -28,234 +28,49 @@
     <link rel="stylesheet" href="inventario.css">
 </head>
 <body>
-    <!-- Background overlay for modal states -->
-    <div class="overlay" id="modalOverlay"></div>
-    
-    <!-- Sidebar Navigation -->
-    <aside id="sidebar" class="sidebar expanded" role="navigation" aria-label="Menu de navegação de inventários">
-        <div class="sidebar-header">
-            <img src="ImgStockMaster.png" alt="StockMaster Logo" id="logo" class="logo">
-            <button id="toggleSidebar" class="sidebar-toggle" aria-label="Alternar barra lateral" title="Expandir/Recolher menu">
-                <i class="bi bi-list"></i>
-            </button>
+    <div class="overlay"></div>
+    <div id="sidebar" class="sidebar expanded">
+      <img src="ImgStockMaster.png" alt="Logo" id="logo">
+      <hr>
+      <nav class="menu" id="inventoryList"></nav>
+      <a href="#" id="createInventory" class="create" >+ CRIAR INVENTÁRIO</a>
+      <button id="toggleSidebar" aria-label="Alternar barra lateral">≡</button>
+    </div>
+    <div class="main-content">
+      <div class="header-container">
+        <h1>-</h1>
+        <button type="button" value="" href="#" id="deleteInventory" class="delete"><img id="imgDeleteInv" src="ImgDeleteInv.png" alt="Deletar Inventário"></button>
+      </div>
+      <div class="items">
+        <div class="createProduct">
+          <button id="createProductButton">+</button>
         </div>
-        
-        <hr class="sidebar-divider">
-        
-        <nav class="menu" id="inventoryList" aria-label="Lista de inventários">
-            <!-- Inventários serão carregados dinamicamente -->
-        </nav>
-        
-        <div class="sidebar-footer">
-            <button id="createInventory" class="btn btn-outline-light create-inventory-btn" title="Criar novo inventário">
-                <i class="bi bi-plus-lg"></i>
-                <span class="btn-text">CRIAR INVENTÁRIO</span>
-            </button>
+      </div>
+       <dialog class="dialog" id="dialogCreateProduct"> <!-- Modal para criar produto -->
+        <button class="closeDialog" id="closeDialogCreateProduct">✕</button>
+        <h2>Adicionar Produto</h2>
+        <input type="text" class="productInput" id="productName" placeholder="Nome do Produto" required>
+        <input type="number" class="productInput" id="productQuantity" placeholder="Quantidade" required>
+        <input type="number" class="productInput" id="productPrice" placeholder="Preço Unitário" required>
+        <button class="saveProduct" id="saveProduct">Salvar</button>
+      </dialog>
+      <dialog class="dialog" id="dialogEditProduct"> <!-- Modal para editar produto -->
+        <button class="closeDialog" id="closeDialogEditProduct">✕</button>
+        <h2>Editar Produto</h2>
+        <div class="inputGroup">
+          <label for="editProductName">Nome:</label>
+          <input type="text" class="productInput" id="editProductName" placeholder="Nome do Produto" required>
         </div>
-    </aside>
-    
-    <!-- Main Content Area -->
-    <main class="main-content" role="main">
-        <header class="main-header">
-            <h1 class="inventory-title" id="inventoryTitle">Selecione um inventário</h1>
-            <button 
-                id="deleteInventory" 
-                class="btn btn-outline-danger delete-inventory-btn" 
-                aria-label="Deletar inventário atual"
-                title="Deletar inventário"
-                style="opacity: 0; visibility: hidden;"
-            >
-                <img id="imgDeleteInv" src="ImgDeleteInv.png" alt="Deletar Inventário">
-            </button>
-        </header>
-        
-        <section class="products-section" aria-label="Lista de produtos">
-            <div class="items" id="itemsGrid">
-                <!-- O botão de criar produto será adicionado dinamicamente pelo JavaScript quando um inventário for selecionado -->
-            </div>
-        </section>
-    </main>
-    
-    <!-- Modal: Criar Produto -->
-    <dialog class="modal-dialog" id="dialogCreateProduct" aria-labelledby="createProductTitle" role="dialog">
-        <div class="modal-content">
-            <header class="modal-header">
-                <h2 id="createProductTitle" class="modal-title">Adicionar Produto</h2>
-                <button class="btn-close" id="closeDialogCreateProduct" aria-label="Fechar modal" title="Fechar">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </header>
-            
-            <form class="modal-body" id="createProductForm">
-                <div class="form-floating mb-3">
-                    <input 
-                        type="text" 
-                        class="form-control product-input" 
-                        id="productName" 
-                        placeholder="Nome do Produto" 
-                        required
-                        autocomplete="off"
-                    >
-                    <label for="productName">Nome do Produto</label>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-floating mb-3">
-                            <input 
-                                type="number" 
-                                class="form-control product-input" 
-                                id="productQuantity" 
-                                placeholder="Quantidade" 
-                                min="0"
-                                step="1"
-                                required
-                            >
-                            <label for="productQuantity">Quantidade</label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating mb-3">
-                            <input 
-                                type="number" 
-                                class="form-control product-input" 
-                                id="productPrice" 
-                                placeholder="Preço Unitário" 
-                                min="0"
-                                step="0.01"
-                                required
-                            >
-                            <label for="productPrice">Preço Unitário (R$)</label>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            
-            <footer class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelCreateProduct">Cancelar</button>
-                <button type="submit" class="btn btn-primary save-product-btn" id="saveProduct" form="createProductForm">
-                    <i class="bi bi-check-lg"></i>
-                    Salvar
-                </button>
-            </footer>
+        <div class="inputGroup">
+          <label for="editProductQuantity">Quantidade:</label>
+          <input type="number" class="productInput" id="editProductQuantity" placeholder="Quantidade" required>
         </div>
-    </dialog>
-    
-    <!-- Modal: Editar Produto -->
-        <!-- Modal: Editar Produto -->
-    <dialog class="modal-dialog" id="dialogEditProduct" aria-labelledby="editProductTitle" role="dialog">
-        <div class="modal-content">
-            <header class="modal-header">
-                <h2 id="editProductTitle" class="modal-title">Editar Produto</h2>
-                <button class="btn-close" id="closeDialogEditProduct" aria-label="Fechar modal" title="Fechar">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </header>
-            
-            <form class="modal-body" id="editProductForm">
-                <div class="form-floating mb-3">
-                    <input 
-                        type="text" 
-                        class="form-control product-input" 
-                        id="editProductName" 
-                        placeholder="Nome do Produto" 
-                        required
-                        autocomplete="off"
-                    >
-                    <label for="editProductName">Nome do Produto</label>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-floating mb-3">
-                            <input 
-                                type="number" 
-                                class="form-control product-input" 
-                                id="editProductQuantity" 
-                                placeholder="Quantidade" 
-                                min="0"
-                                step="1"
-                                required
-                            >
-                            <label for="editProductQuantity">Quantidade</label>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating mb-3">
-                            <input 
-                                type="number" 
-                                class="form-control product-input" 
-                                id="editProductPrice" 
-                                placeholder="Preço Unitário" 
-                                min="0"
-                                step="0.01"
-                                required
-                            >
-                            <label for="editProductPrice">Preço Unitário (R$)</label>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            
-            <footer class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelEditProduct">Cancelar</button>
-                <button type="submit" class="btn btn-primary save-product-btn" id="updateProduct" form="editProductForm">
-                    <i class="bi bi-check-lg"></i>
-                    Salvar Alterações
-                </button>
-            </footer>
+        <div class="inputGroup">
+          <label for="editProductPrice">Preço:</label>
+          <input type="number" class="productInput" id="editProductPrice" placeholder="Preço Unitário" required>
         </div>
-    </dialog>
-    
-    <!-- Modal: Criar Inventário -->
-    <dialog class="modal-dialog" id="dialogCreateInventory" aria-labelledby="createInventoryTitle" role="dialog">
-        <div class="modal-content">
-            <header class="modal-header">
-                <h2 id="createInventoryTitle" class="modal-title">Criar Inventário</h2>
-                <button class="btn-close" id="closeDialogCreateInventory" aria-label="Fechar modal" title="Fechar">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </header>
-            
-            <form class="modal-body" id="createInventoryForm">
-                <div class="form-floating mb-3">
-                    <input 
-                        type="text" 
-                        class="form-control product-input" 
-                        id="inventoryName" 
-                        placeholder="Nome do Inventário" 
-                        required
-                        autocomplete="off"
-                    >
-                    <label for="inventoryName">Nome do Inventário</label>
-                </div>
-                
-                <div class="form-check mb-3">
-                    <input 
-                        class="form-check-input" 
-                        type="checkbox" 
-                        id="noPriceCheckbox"
-                    >
-                    <label class="form-check-label" for="noPriceCheckbox">
-                        <strong>Não incluir preços</strong> - Os produtos deste inventário não terão campos de preço
-                    </label>
-                </div>
-            </form>
-            
-            <footer class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelCreateInventory">Cancelar</button>
-                <button type="submit" class="btn btn-primary save-product-btn" id="saveInventory" form="createInventoryForm">
-                    <i class="bi bi-check-lg"></i>
-                    Criar
-                </button>
-            </footer>
-        </div>
-    </dialog>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    
-    <!-- Custom JS -->
-    <script defer src="inventario.js"></script>
+        <button class="saveProduct" id="updateProduct">Salvar</button>
+      </dialog>
+    </div>
 </body>
 </html>
