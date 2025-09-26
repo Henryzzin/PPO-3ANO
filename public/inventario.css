@@ -1,4 +1,3 @@
-/* CSS Reset & Base Styles */
 *,
 *::before,
 *::after {
@@ -6,7 +5,6 @@
 }
 
 :root {
-    /* Nova Paleta de Cores Harmoniosa */
     --primary-color: #4f46e5;
     --primary-hover: #4338ca;
     --primary-light: #a5b4fc;
@@ -15,7 +13,6 @@
     --accent-color: #06b6d4;
     --accent-hover: #0891b2;
     
-    /* Layout Colors Suavizadas - Tema Escuro Harmonioso */
     --sidebar-bg: #374151;
     --sidebar-hover: #4b5563;
     --sidebar-border: #6b7280;
@@ -27,17 +24,14 @@
     --overlay-bg: rgba(17, 24, 39, 0.8);
     --modal-bg: #ffffff;
     
-    /* Text Colors */
     --text-primary: #f9fafb;
     --text-secondary: #d1d5db;
     --text-muted: #9ca3af;
     --border-color: #374151;
     
-    /* Typography */
     --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-brand: 'Irish Grover', serif;
     
-    /* Spacing */
     --spacing-xs: 0.25rem;
     --spacing-sm: 0.5rem;
     --spacing-md: 1rem;
@@ -45,28 +39,23 @@
     --spacing-xl: 2rem;
     --spacing-xxl: 3rem;
     
-    /* Borders & Radius */
     --border-radius: 8px;
     --border-radius-lg: 12px;
     --border-radius-xl: 16px;
     
-    /* Transitions */
     --transition-fast: 0.15s ease-in-out;
     --transition-medium: 0.3s ease-in-out;
     --transition-slow: 0.5s ease-in-out;
     
-    /* Shadows */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
     --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.2);
     --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.25);
     
-    /* Sidebar */
     --sidebar-width: 280px;
     --sidebar-collapsed-width: 70px;
 }
 
-/* Base Layout */
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -113,7 +102,6 @@ body {
     width: var(--sidebar-collapsed-width);
 }
 
-/* Sidebar Header */
 .sidebar-header {
     display: flex;
     align-items: center;
@@ -368,7 +356,6 @@ body {
     filter: grayscale(0);
 }
 
-/* Sidebar Footer */
 .sidebar-footer {
     padding: var(--spacing-lg);
     border-top: 1px solid var(--sidebar-border);
@@ -497,8 +484,6 @@ body {
     padding: 10px;
   }
 
-  /* Estilos antigos do botão removidos - usando novo estilo de card */
-
 .product-card {
     padding: var(--spacing-lg);
     display: flex;
@@ -609,7 +594,6 @@ body {
     border-color: rgba(255,255,255,0.2);
   }
 
-  /* Estilos para o card de criar produto */
   .create-product-card {
     border: 2px dashed rgba(148, 163, 184, 0.4);
     background: rgba(30, 41, 59, 0.3);
@@ -680,7 +664,6 @@ body {
     margin: 0;
   }
 
-  /* Modais de produto - mais compactos */
   #dialogCreateProduct,
   #dialogEditProduct {
     width: 380px;
@@ -696,7 +679,6 @@ body {
     margin-bottom: 15px;
   }
 
-  /* Títulos dos modais de produto - ainda menores */
   #dialogCreateProduct h2,
   #dialogEditProduct h2 {
     font-size: 1.3rem;
@@ -774,7 +756,6 @@ body {
     margin-bottom: 3px;
   }
 
-  /* Estilos específicos para modais de produto - mais compactos */
   #dialogCreateProduct .inputGroup,
   #dialogEditProduct .inputGroup {
     margin-bottom: 12px;
@@ -902,7 +883,6 @@ body {
     transform: scale(1.1);
   }
 
-  /* Estilos para o modal de criar inventário */
   .inputGroup {
     margin: 15px 0;
     display: flex;
@@ -925,7 +905,6 @@ body {
     cursor: pointer;
   }
 
-  /* Estilos melhorados para botões dos modais de produto */
   #dialogCreateProduct .saveProduct,
   #dialogEditProduct .saveProduct {
     width: 100px;
@@ -935,7 +914,6 @@ body {
     padding: 0;
   }
 
-  /* Estilo mais compacto para inputs dos modais de produto */
   #dialogCreateProduct .productInput,
   #dialogEditProduct .productInput {
     padding: 8px 10px;
@@ -943,7 +921,6 @@ body {
     border-width: 1px;
   }
 
-  /* Estilos para o modal de perfil */
   #dialogProfile {
     width: 420px;
     padding: 25px;
@@ -1020,7 +997,6 @@ body {
     font-size: 16px;
   }
 
-  /* Estilos para campo editável do nome */
   .editable-item {
     flex-direction: row;
     align-items: center !important;
@@ -1124,7 +1100,6 @@ body {
     font-size: 12px;
   }
 
-  /* Tornar a logo clicável */
   #logo {
     cursor: pointer;
     transition: all 0.3s ease;

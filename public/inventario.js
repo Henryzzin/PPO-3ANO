@@ -727,7 +727,6 @@ logoutButton.addEventListener('click', () => {
   window.location.href = 'login.html';
 });
 
-// Event listener para entrar no modo de edição
 editNameButton.addEventListener('click', () => {
   const currentName = profileNameDisplay.textContent;
   if (currentName === 'Clique no lápis para adicionar nome') {
@@ -740,7 +739,6 @@ editNameButton.addEventListener('click', () => {
   profileNameInput.focus();
 });
 
-// Event listener para cancelar edição com Escape
 profileNameInput.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     nameDisplayContainer.style.display = 'flex';

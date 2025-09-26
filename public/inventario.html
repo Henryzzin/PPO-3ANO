@@ -9,22 +9,14 @@
     
     <title>StockMaster - Inventário</title>
     
-    <!-- Preload critical resources -->
     <link rel="preload" href="ImgStockMaster.png" as="image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Irish+Grover&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="inventario.css">
 </head>
 <body>
@@ -43,7 +35,7 @@
       </div>
       <div class="items">
       </div>
-       <dialog class="dialog" id="dialogCreateProduct"> <!-- Modal para criar produto -->
+       <dialog class="dialog" id="dialogCreateProduct"> 
         <button class="closeDialog" id="closeDialogCreateProduct">✕</button>
         <h2>Adicionar Produto</h2>
         <div class="inputGroup">
@@ -60,7 +52,7 @@
         </div>
         <button class="saveProduct" id="saveProduct">Salvar</button>
       </dialog>
-      <dialog class="dialog" id="dialogEditProduct"> <!-- Modal para editar produto -->
+      <dialog class="dialog" id="dialogEditProduct"> 
         <button class="closeDialog" id="closeDialogEditProduct">✕</button>
         <h2>Editar Produto</h2>
         <div class="inputGroup">
@@ -78,7 +70,7 @@
         <button class="saveProduct" id="updateProduct">Salvar</button>
       </dialog>
       
-      <dialog class="dialog" id="dialogCreateInventory"> <!-- Modal para criar inventário -->
+      <dialog class="dialog" id="dialogCreateInventory">
         <button class="closeDialog" id="closeDialogCreateInventory">✕</button>
         <h2>Criar Inventário</h2>
         <input type="text" class="productInput" id="inventoryName" placeholder="Nome do Inventário" required>
@@ -90,7 +82,7 @@
         <button class="saveProduct" id="saveInventory">Criar</button>
       </dialog>
 
-      <dialog class="dialog" id="dialogProfile"> <!-- Modal de perfil -->
+      <dialog class="dialog" id="dialogProfile"> 
         <button class="closeDialog" id="closeDialogProfile">✕</button>
         <h2>Perfil do Usuário</h2>
         <div class="profile-content">
@@ -134,7 +126,6 @@
       </dialog>
     </div>
 
-    <!-- Scripts -->
     <script defer src="inventario.js"></script>
 </body>
 </html>
