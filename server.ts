@@ -105,6 +105,95 @@ app.get('/inventarios/:idUsuario', async (req: any, res: any) => {
     }
 });
 
+// Endpoint para obter informações do perfil do usuário
+app.get('/perfil/:idUsuario', async (req: any, res: any) => {
+    const idUsuario = parseInt(req.params.idUsuario);
+    if (isNaN(idUsuario)) {
+        return res.status(400).json({ error: "ID de usuário inválido." });
+    }
+    
+    try {
+        // Buscar informações do usuário
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: idUsuario }
+        });
+        
+        if (!usuario) {
+            return res.status(404).json({ error: "Usuário não encontrado." });
+        }
+        
+        // Contar inventários
+        const inventariosCount = await prisma.inventario.count({
+            where: { idUsuarioFK: idUsuario }
+        });
+        
+        // Contar produtos (através dos inventários do usuário)
+        const inventariosDoUsuario = await prisma.inventario.findMany({
+            where: { idUsuarioFK: idUsuario },
+            select: { id: true }
+        });
+        
+        const idsInventarios = inventariosDoUsuario.map(inv => inv.id);
+        
+        const produtosCount = await prisma.produto.count({
+            where: {
+                idInventarioFK: {
+                    in: idsInventarios
+                }
+            }
+        });
+        
+        res.status(200).json({
+            usuario: {
+                id: usuario.id,
+                nome: usuario.nome || usuario.email, // Usa nome se existir, senão usa email
+                email: usuario.email
+            },
+            estatisticas: {
+                inventarios: inventariosCount,
+                produtos: produtosCount
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro ao buscar informações do perfil." });
+    }
+});
+
+// Endpoint para atualizar o perfil do usuário
+app.put('/perfil/:idUsuario', async (req: any, res: any) => {
+    
+    const idUsuario = parseInt(req.params.idUsuario);
+    const { nome } = req.body;
+    
+    if (isNaN(idUsuario)) {
+        return res.status(400).json({ error: "ID de usuário inválido." });
+    }
+    
+    if (!nome || nome.trim() === '') {
+        return res.status(400).json({ error: "Nome é obrigatório." });
+    }
+    
+    try {
+        const usuarioAtualizado = await prisma.usuario.update({
+            where: { id: idUsuario },
+            data: { nome: nome.trim() }
+        });
+        
+        res.status(200).json({
+            message: "Perfil atualizado com sucesso!",
+            usuario: {
+                id: usuarioAtualizado.id,
+                nome: usuarioAtualizado.nome,
+                email: usuarioAtualizado.email
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro ao atualizar perfil." });
+    }
+});
+
 app.post('/deleteInventario', async (req: Request, res: Response) => {
     const id = req.body.idInventario;
 

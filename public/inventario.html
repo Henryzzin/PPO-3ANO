@@ -89,6 +89,49 @@
         </div>
         <button class="saveProduct" id="saveInventory">Criar</button>
       </dialog>
+
+      <dialog class="dialog" id="dialogProfile"> <!-- Modal de perfil -->
+        <button class="closeDialog" id="closeDialogProfile">✕</button>
+        <h2>Perfil do Usuário</h2>
+        <div class="profile-content">
+          <div class="profile-info">
+            <div class="info-item editable-item">
+              <i class="bi bi-person-circle"></i>
+              <span>Nome:</span>
+              <div class="name-display-container">
+                <strong id="profileNameDisplay">-</strong>
+                <button id="editNameButton" class="edit-name-btn">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+              <div class="name-edit-container" style="display: none;">
+                <input type="text" id="profileNameInput" class="profile-input" placeholder="Seu nome">
+                <button id="saveNameButton" class="save-name-btn">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-envelope"></i>
+              <span>Email: <strong id="profileEmail">-</strong></span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-box-seam"></i>
+              <span>Inventários: <strong id="profileInventoryCount">0</strong></span>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-grid-3x3"></i>
+              <span>Produtos: <strong id="profileProductCount">0</strong></span>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button class="logout-btn" id="logoutButton">
+              <i class="bi bi-box-arrow-right"></i>
+              Sair da Conta
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
 
     <!-- Scripts -->

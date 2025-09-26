@@ -23,6 +23,18 @@ const editProductQuantity = document.getElementById('editProductQuantity');
 const inventoryNameInput = document.getElementById('inventoryName');
 const noPriceCheckbox = document.getElementById('noPriceCheckbox');
 const closeDialogButtons = document.querySelectorAll('.closeDialog');
+const logo = document.getElementById('logo');
+const dialogProfile = document.getElementById('dialogProfile');
+const logoutButton = document.getElementById('logoutButton');
+const profileEmail = document.getElementById('profileEmail');
+const profileInventoryCount = document.getElementById('profileInventoryCount');
+const profileProductCount = document.getElementById('profileProductCount');
+const profileNameDisplay = document.getElementById('profileNameDisplay');
+const profileNameInput = document.getElementById('profileNameInput');
+const editNameButton = document.getElementById('editNameButton');
+const saveNameButton = document.getElementById('saveNameButton');
+const nameDisplayContainer = document.querySelector('.name-display-container');
+const nameEditContainer = document.querySelector('.name-edit-container');
 
 let selectedProductId = null;
 let selectedInventoryId = null;
@@ -560,6 +572,9 @@ closeDialogButtons.forEach(button => {
       dialogCreateInventory.style.display = "none";
       overlay.classList.remove("show");
       document.body.classList.remove("modal-open");
+    } else if (button.id === 'closeDialogProfile') {
+      dialogProfile.style.display = 'none';
+      overlay.classList.remove("darkBackground");
     }
     clearProductInputs();
     selectedProductId = null; 
@@ -684,4 +699,135 @@ if (window.innerWidth <= 768) {
     sidebar.classList.toggle('show');
     overlay.classList.toggle('show');
   });
+}
+
+// Event listeners para modal de perfil
+logo.addEventListener('click', async () => {
+  console.log('Logo clicada');
+  console.log('dialogProfile:', dialogProfile);
+  console.log('overlay:', overlay);
+  
+  await loadProfileData();
+  
+  if (dialogProfile) {
+    dialogProfile.style.display = 'block';
+  } else {
+    console.error('dialogProfile não encontrado');
+  }
+  
+  if (overlay) {
+    overlay.classList.add('darkBackground');
+  } else {
+    console.error('overlay não encontrado');
+  }
+});
+
+logoutButton.addEventListener('click', () => {
+  localStorage.removeItem('usuario');
+  window.location.href = 'login.html';
+});
+
+// Event listener para entrar no modo de edição
+editNameButton.addEventListener('click', () => {
+  const currentName = profileNameDisplay.textContent;
+  if (currentName === 'Clique no lápis para adicionar nome') {
+    profileNameInput.value = '';
+  } else {
+    profileNameInput.value = currentName;
+  }
+  nameDisplayContainer.style.display = 'none';
+  nameEditContainer.style.display = 'flex';
+  profileNameInput.focus();
+});
+
+// Event listener para cancelar edição com Escape
+profileNameInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    nameDisplayContainer.style.display = 'flex';
+    nameEditContainer.style.display = 'none';
+  } else if (e.key === 'Enter') {
+    saveNameButton.click();
+  }
+});
+
+// Event listener para salvar o nome
+saveNameButton.addEventListener('click', async () => {
+  const nome = profileNameInput.value.trim();
+  
+  if (!nome) {
+    alert('Por favor, insira um nome válido.');
+    return;
+  }
+  
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  if (!usuario) {
+    window.location.href = "login.html";
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/perfil/${usuario.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ nome })
+    });
+    
+    if (!response.ok) {
+      const data = await response.json();
+      alert('Erro ao atualizar nome: ' + (data.error || 'Erro desconhecido'));
+      return;
+    }
+    
+    const data = await response.json();
+    
+    // Atualizar localStorage com novo nome
+    usuario.nome = data.usuario.nome;
+    localStorage.setItem('usuario', JSON.stringify(usuario));
+    
+    // Atualizar display e voltar ao modo visualização
+    profileNameDisplay.textContent = data.usuario.nome;
+    nameDisplayContainer.style.display = 'flex';
+    nameEditContainer.style.display = 'none';
+    
+    alert('Nome atualizado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao atualizar nome:', error);
+    alert('Erro de conexão. Tente novamente.');
+  }
+});
+
+// Função para carregar dados do perfil
+async function loadProfileData() {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  
+  if (!usuario) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const response = await fetch(`/perfil/${usuario.id}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      profileNameDisplay.textContent = data.usuario.nome || 'Clique no lápis para adicionar nome';
+      profileEmail.textContent = data.usuario.email;
+      profileInventoryCount.textContent = data.estatisticas.inventarios;
+      profileProductCount.textContent = data.estatisticas.produtos;
+    } else {
+      console.error('Erro ao carregar perfil:', data.error);
+      profileNameDisplay.textContent = usuario.nome || 'Clique no lápis para adicionar nome';
+      profileEmail.textContent = usuario.email || '-';
+      profileInventoryCount.textContent = '0';
+      profileProductCount.textContent = '0';
+    }
+  } catch (error) {
+    console.error('Erro ao buscar dados do perfil:', error);
+    profileNameDisplay.textContent = usuario.nome || 'Clique no lápis para adicionar nome';
+    profileEmail.textContent = usuario.email || '-';
+    profileInventoryCount.textContent = '0';
+    profileProductCount.textContent = '0';
+  }
 }
