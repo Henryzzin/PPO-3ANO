@@ -1,6 +1,8 @@
 const toggleBtn = document.getElementById('toggleSidebar');
 const sidebar = document.getElementById('sidebar');
 const createBtn = document.getElementById('createInventory');
+
+  try {entById('createInventory');
 const inventoryList = document.getElementById('inventoryList');
 const mainTitle = document.getElementById('inventoryTitle');
 const deleteInventoryBtn = document.getElementById('deleteInventory');
@@ -123,22 +125,26 @@ createBtn.addEventListener('click', () => {
 
 // Salvar inventário
 saveInventoryButton.addEventListener('click', async () => {
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
-
-  if (!usuario) {
-      alert("Usuário não autenticado!");
-      return;
-  }
-
-  const invName = inventoryNameInput.value.trim();
-  if (!invName) {
-    alert("Digite um nome para o inventário!");
-    return;
-  }
-
-  const semPreco = noPriceCheckbox.checked;
-
+  // Prevenir múltiplos cliques
+  if (saveInventoryButton.disabled) return;
+  saveInventoryButton.disabled = true;
+  
   try {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+    if (!usuario) {
+        alert("Usuário não autenticado!");
+        return;
+    }
+
+    const invName = inventoryNameInput.value.trim();
+    if (!invName) {
+      alert("Digite um nome para o inventário!");
+      return;
+    }
+
+    const semPreco = noPriceCheckbox.checked;
+
     const response = await fetch("/inventario", {
       method: "POST",
       headers: {
@@ -153,25 +159,27 @@ saveInventoryButton.addEventListener('click', async () => {
 
     if(!response.ok) {
       throw new Error("Erro ao criar inventário.")
-    } else {
-      dialogCreateInventory.style.display = "none";
-      overlay.classList.remove("show");
-      document.body.classList.remove("modal-open");
-      inventoryNameInput.value = "";
-      
-      await resetInventory();
-      renderProducts(null); // Limpa a lista de produtos
-      
-      // Seleciona o novo inventário criado (último da lista)
-      const inventoryElements = document.querySelectorAll('.inventory');
-      if (inventoryElements.length > 0) {
-        const lastInventory = inventoryElements[inventoryElements.length - 1];
-        lastInventory.click(); // Simula clique para selecionar
-      }
+    }
+
+    dialogCreateInventory.style.display = "none";
+    overlay.classList.remove("show");
+    document.body.classList.remove("modal-open");
+    inventoryNameInput.value = "";
+    
+    await resetInventory();
+    renderProducts(null); // Limpa a lista de produtos
+    
+    // Seleciona o novo inventário criado (último da lista)
+    const inventoryElements = document.querySelectorAll('.inventory');
+    if (inventoryElements.length > 0) {
+      const lastInventory = inventoryElements[inventoryElements.length - 1];
+      lastInventory.click(); // Simula clique para selecionar
     }
   } catch (error) {
     console.error("Falha ao criar inventário.", error);
     alert("Erro ao criar inventário!");
+  } finally {
+    saveInventoryButton.disabled = false;
   }
 });
 
@@ -503,10 +511,14 @@ async function openProductDialog() {
   if (overlay) overlay.classList.add("darkBackground");
   // Remove event listeners antigos antes de adicionar um novo
   saveProductButton.onclick = async () => {
-    dialogCreateProduct.style.display = "none";
-    overlay.classList.remove("darkBackground");
-    document.body.classList.remove("modal-open");
+    // Prevenir múltiplos cliques
+    if (saveProductButton.disabled) return;
+    saveProductButton.disabled = true;
+    
     try {
+      dialogCreateProduct.style.display = "none";
+      overlay.classList.remove("darkBackground");
+      document.body.classList.remove("modal-open");
       const nome = productName.value;
       const quantidade = parseInt(productQuantity.value);
       
@@ -555,6 +567,8 @@ async function openProductDialog() {
       }
     } catch (error) {
       console.error("Falha ao criar produto.", error);
+    } finally {
+      saveProductButton.disabled = false;
     }
     clearProductInputs();
   };
@@ -613,6 +627,10 @@ inventoryList.addEventListener('click', async (e) => {
 // Event listener removido - lógica incorreta
 
 updateProductButton.addEventListener('click', async () => {
+  // Prevenir múltiplos cliques
+  if (updateProductButton.disabled) return;
+  updateProductButton.disabled = true;
+  
   try {
     const editName = editProductName.value.trim();
     const editQuantity = parseInt(editProductQuantity.value);
@@ -622,22 +640,26 @@ updateProductButton.addEventListener('click', async () => {
     // Validação dos campos
     if (!editName) {
       alert("Por favor, preencha o nome do produto.");
+      updateProductButton.disabled = false;
       return;
     }
     
     if (isNaN(editQuantity) || editQuantity < 0) {
       alert("Por favor, insira uma quantidade válida.");
+      updateProductButton.disabled = false;
       return;
     }
     
     // Só valida preço se o campo estiver visível e obrigatório
     if (editProductPrice.hasAttribute('required') && (isNaN(editPrice) || editPrice < 0)) {
       alert("Por favor, insira um preço válido.");
+      updateProductButton.disabled = false;
       return;
     }
 
     if (!idProduct) {
       alert("Erro: ID do produto não encontrado.");
+      updateProductButton.disabled = false;
       return;
     }
 
@@ -674,6 +696,8 @@ updateProductButton.addEventListener('click', async () => {
   } catch (error) {
     console.error("Falha ao editar produto.", error);
     alert("Erro ao salvar as alterações do produto.");
+  } finally {
+    updateProductButton.disabled = false;
   }
 });
 
@@ -750,20 +774,23 @@ profileNameInput.addEventListener('keydown', (e) => {
 
 // Event listener para salvar o nome
 saveNameButton.addEventListener('click', async () => {
-  const nome = profileNameInput.value.trim();
-  
-  if (!nome) {
-    alert('Por favor, insira um nome válido.');
-    return;
-  }
-  
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
-  if (!usuario) {
-    window.location.href = "login.html";
-    return;
-  }
+  // Prevenir múltiplos cliques
+  if (saveNameButton.disabled) return;
+  saveNameButton.disabled = true;
   
   try {
+    const nome = profileNameInput.value.trim();
+    
+    if (!nome) {
+      alert('Por favor, insira um nome válido.');
+      return;
+    }
+    
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.href = "login.html";
+      return;
+    }
     const response = await fetch(`/perfil/${usuario.id}`, {
       method: 'PUT',
       headers: {
@@ -793,6 +820,8 @@ saveNameButton.addEventListener('click', async () => {
   } catch (error) {
     console.error('Erro ao atualizar nome:', error);
     alert('Erro de conexão. Tente novamente.');
+  } finally {
+    saveNameButton.disabled = false;
   }
 });
 
