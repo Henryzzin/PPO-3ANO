@@ -1,12 +1,13 @@
 html {
-    min-height: 100vh;
+    height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     background: linear-gradient(135deg, #1e293b 0%, #374151 50%, #111827 100%), 
@@ -30,30 +31,41 @@ body::before {
 }
 
 #titulo {
-    margin-top: 2rem;
-    font-size: 4.5rem;
+    margin-top: 1rem;
+    font-size: 3.5rem;
     text-align: center;
     font-family: "Irish Grover", serif;
     color: #94a3b8;
     text-shadow: 0 4px 20px rgba(0,0,0,0.8), 0 0 30px rgba(148, 163, 184, 0.5);
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 main {
-    margin: 4rem auto;
+    margin: 1rem auto;
     width: 90%;
     max-width: 450px;
+    max-height: 90vh;
     background: rgba(30, 41, 59, 0.85);
     backdrop-filter: blur(20px);
     border-radius: 25px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    padding: 40px;
+    padding: 30px;
     border: 1px solid rgba(148, 163, 184, 0.2);
+    overflow: hidden;
 }
 
 form {
     width: 100%;
     margin: 0;
+}
+
+.form-label {
+    margin: 0 0 0.5rem 0;
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
 }
 
 label {
@@ -68,16 +80,17 @@ label {
 h2 {
     text-align: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #e2e8f0;
-    font-size: 2rem;
+    color: #f8fafc;
+    font-size: 1.8rem;
     margin-bottom: 0.5rem;
     font-weight: 700;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 h3 {
     text-align: center;
-    font-size: 18px;
-    color: #94a3b8;
+    font-size: 16px;
+    color: #e2e8f0;
     margin-top: 0;
     font-weight: 400;
 }
@@ -85,9 +98,9 @@ h3 {
 #submit {
     cursor: pointer;
     width: 100%;
-    padding: 15px;
+    padding: 12px;
     border-radius: 12px;
-    margin: 2rem 0 1rem 0;
+    margin: 1.5rem 0 1rem 0;
     background: linear-gradient(45deg, #1e40af, #3b82f6, #06b6d4);
     color: white;
     border: none;
@@ -104,13 +117,13 @@ h3 {
 
 .login {
     border-radius: 12px;
-    padding: 15px;
+    padding: 12px;
     font-size: 16px;
     border: 2px solid #475569;
     background: rgba(30, 41, 59, 0.8);
     color: #e2e8f0;
     transition: all 0.3s ease;
-    margin-top: 8px;
+    margin-top: 0;
 }
 
 .login:focus {
@@ -124,7 +137,7 @@ h3 {
 }
 
 div {
-    margin-top: 2rem;
+    margin-top: 1rem;
     text-align: center;
 }
 
@@ -141,18 +154,26 @@ a:hover {
 }
 
 #descricao {
-    margin-top: -1rem;
-    color: #94a3b8;
+    margin-top: -0.5rem;
+    color: #f1f5f9 !important;
+    font-size: 14px;
 }
 
 #subtitulo {
-    font-size: 24px;
-    color: #cbd5e1;
+    font-size: 20px;
+    color: #f8fafc;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 #cadastro {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #cbd5e1;
+    color: #e2e8f0;
+    margin: 0;
+    font-size: 14px;
+}
+
+.signup-link {
+    color: #e2e8f0;
 }
 
 .error {
@@ -161,4 +182,64 @@ a:hover {
     visibility: hidden;
     margin-top: 5px;
     font-weight: 500;
+}
+
+/* Media Queries para responsividade */
+@media (max-height: 700px) {
+    #titulo {
+        font-size: 2.8rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    main {
+        margin: 0.5rem auto;
+        padding: 20px;
+        max-height: 90vh;
+        overflow: hidden;
+    }
+    
+    #descricao {
+        font-size: 12px;
+        margin-top: -0.3rem;
+        color: #f1f5f9;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0.3rem;
+    }
+}
+
+@media (max-height: 600px) {
+    body {
+        overflow-y: auto;
+    }
+    
+    #titulo {
+        font-size: 2.2rem;
+        margin-top: 0.3rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    main {
+        margin: 0.3rem auto;
+        padding: 15px;
+    }
+    
+    #submit {
+        margin: 1rem 0 0.5rem 0;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    #titulo {
+        font-size: 2.5rem;
+    }
 }

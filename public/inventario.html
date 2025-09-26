@@ -38,20 +38,26 @@
     </div>
     <div class="main-content">
       <div class="header-container">
-        <h1>-</h1>
+        <h1 id="inventoryTitle">-</h1>
         <button type="button" value="" href="#" id="deleteInventory" class="delete"><img id="imgDeleteInv" src="ImgDeleteInv.png" alt="Deletar Inventário"></button>
       </div>
       <div class="items">
-        <div class="createProduct">
-          <button id="createProductButton">+</button>
-        </div>
       </div>
        <dialog class="dialog" id="dialogCreateProduct"> <!-- Modal para criar produto -->
         <button class="closeDialog" id="closeDialogCreateProduct">✕</button>
         <h2>Adicionar Produto</h2>
-        <input type="text" class="productInput" id="productName" placeholder="Nome do Produto" required>
-        <input type="number" class="productInput" id="productQuantity" placeholder="Quantidade" required>
-        <input type="number" class="productInput" id="productPrice" placeholder="Preço Unitário" required>
+        <div class="inputGroup">
+          <label for="productName">Nome:</label>
+          <input type="text" class="productInput" id="productName" placeholder="Nome do Produto" required>
+        </div>
+        <div class="inputGroup">
+          <label for="productQuantity">Quantidade:</label>
+          <input type="number" class="productInput" id="productQuantity" placeholder="Quantidade" required>
+        </div>
+        <div class="inputGroup" id="productPriceGroup">
+          <label for="productPrice">Preço:</label>
+          <input type="number" class="productInput" id="productPrice" placeholder="Preço Unitário" required>
+        </div>
         <button class="saveProduct" id="saveProduct">Salvar</button>
       </dialog>
       <dialog class="dialog" id="dialogEditProduct"> <!-- Modal para editar produto -->
@@ -65,12 +71,27 @@
           <label for="editProductQuantity">Quantidade:</label>
           <input type="number" class="productInput" id="editProductQuantity" placeholder="Quantidade" required>
         </div>
-        <div class="inputGroup">
+        <div class="inputGroup" id="editProductPriceGroup">
           <label for="editProductPrice">Preço:</label>
           <input type="number" class="productInput" id="editProductPrice" placeholder="Preço Unitário" required>
         </div>
         <button class="saveProduct" id="updateProduct">Salvar</button>
       </dialog>
+      
+      <dialog class="dialog" id="dialogCreateInventory"> <!-- Modal para criar inventário -->
+        <button class="closeDialog" id="closeDialogCreateInventory">✕</button>
+        <h2>Criar Inventário</h2>
+        <input type="text" class="productInput" id="inventoryName" placeholder="Nome do Inventário" required>
+        <div class="inputGroup">
+          <label for="noPriceCheckbox">
+            <input type="checkbox" id="noPriceCheckbox"> Este inventário não terá preços nos produtos
+          </label>
+        </div>
+        <button class="saveProduct" id="saveInventory">Criar</button>
+      </dialog>
     </div>
+
+    <!-- Scripts -->
+    <script defer src="inventario.js"></script>
 </body>
 </html>

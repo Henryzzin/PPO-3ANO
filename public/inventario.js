@@ -22,15 +22,18 @@ const editProductPrice = document.getElementById('editProductPrice');
 const editProductQuantity = document.getElementById('editProductQuantity');
 const inventoryNameInput = document.getElementById('inventoryName');
 const noPriceCheckbox = document.getElementById('noPriceCheckbox');
-const closeDialogButtons = document.querySelectorAll('.btn-close');
+const closeDialogButtons = document.querySelectorAll('.closeDialog');
 
 let selectedProductId = null;
 let selectedInventoryId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log('DOM carregado, verificando usuário...');
   const usuario = JSON.parse(localStorage.getItem("usuario"));
+  console.log('Usuário no localStorage:', usuario);
 
   if (!usuario) {
+    console.log('Usuário não encontrado, redirecionando para login');
     window.location.href = "login.html";
     return;
   }
@@ -251,7 +254,7 @@ deleteInventoryBtn.addEventListener('click', async () => {
 items.addEventListener('click', async (e) => {
   if (e.target.classList.contains('deleteProduct') || e.target.classList.contains('deleteProductImage')) {
     // Se o clique foi na imagem, suba para o botão
-    const btn = e.target.classList.contains('delete-product') ? e.target : e.target.closest('.delete-product');
+    const btn = e.target.classList.contains('deleteProduct') ? e.target : e.target.closest('.deleteProduct');
     if (!selectedInventoryId) {
       alert("Selecione um inventário para excluir.");
       return;
@@ -282,16 +285,44 @@ items.addEventListener('click', async (e) => {
   if (e.target.classList.contains('editProduct') || e.target.classList.contains('editProductImage')) {
     const btn = e.target.classList.contains('editProduct') ? e.target : e.target.closest('.editProduct');
     const idProduto = btn.dataset.id;
+    
+    console.log('Abrindo modal de edição para produto ID:', idProduto);
+    
     // Buscar dados do produto na lista renderizada
     const productDiv = btn.closest('.products');
-    const nome = productDiv.querySelector('.productInfo:nth-child(1)').textContent.replace('Nome:', '').trim();
-    const preco = productDiv.querySelector('.productInfo:nth-child(2)').textContent.replace('Preço:', '').replace('R$', '').trim();
-    const quantidade = productDiv.querySelector('.productInfo:nth-child(3)').textContent.replace('Quantidade:', '').trim();
+    const productInfos = productDiv.querySelectorAll('.productInfo');
+    
+    if (productInfos.length === 0) {
+      alert('Erro ao carregar dados do produto');
+      return;
+    }
+    
+    const nome = productInfos[0].textContent.replace('Nome:', '').trim();
+    
+    // Verificar se há campo de preço (pode não ter se for inventário sem preço)
+    let preco = '';
+    let quantidade = '';
+    
+    if (productInfos.length === 3) {
+      // Tem preço
+      const precoText = productInfos[1].textContent.replace('Preço:', '').replace('R$', '').replace(',', '.').trim();
+      preco = parseFloat(precoText) || 0;
+      quantidade = productInfos[2].textContent.replace('Quantidade:', '').trim();
+    } else if (productInfos.length === 2) {
+      // Não tem preço
+      quantidade = productInfos[1].textContent.replace('Quantidade:', '').trim();
+      preco = 0;
+    }
 
+    // Preencher campos do modal
     editProductName.value = nome;
     editProductPrice.value = preco;
     editProductQuantity.value = quantidade;
-    window.idProduto = idProduto; // para uso no update
+    window.idProduto = idProduto;
+    
+    console.log('Dados carregados:', { nome, preco, quantidade });
+    
+    // Abrir modal
     dialogEditProduct.style.display = "block";
     const overlay = document.querySelector('.overlay');
     if (overlay) overlay.classList.add("darkBackground");
@@ -300,24 +331,34 @@ items.addEventListener('click', async (e) => {
 
 // Função para renderizar produtos
 async function renderProducts(inventoryId) {
+  console.log('renderProducts chamada com inventoryId:', inventoryId);
+  
   // Se não há inventário selecionado, limpa a área e não mostra o botão
   if (!inventoryId) {
+    console.log('Nenhum inventário selecionado, limpando área');
     items.innerHTML = '';
     return;
   }
   
+  console.log('Inventário selecionado, renderizando produtos...');
+  
   // Se há inventário selecionado, mostra o botão de criar produto
   items.innerHTML = `
-    <div class="create-product-card">
-      <button id="createProductButton" class="create-product-btn" aria-label="Adicionar novo produto" title="Adicionar produto">
-        <i class="bi bi-plus"></i>
-      </button>
+    <div class="products create-product-card">
+      <div class="productContent create-product-content">
+        <button id="createProductButton" class="create-product-btn" aria-label="Adicionar novo produto" title="Adicionar produto">
+          <i class="bi bi-plus-lg"></i>
+          <span>Adicionar Produto</span>
+        </button>
+      </div>
     </div>
   `;
   
   try {
+    console.log('Fazendo requisição para:', `/produtos/${inventoryId}`);
     const response = await fetch(`/produtos/${inventoryId}`);
     const data = await response.json();
+    console.log('Resposta da API:', data);
     if (response.ok) {
       const inventario = data.inventario;
       const semPreco = inventario?.semPreco || false;
@@ -325,10 +366,11 @@ async function renderProducts(inventoryId) {
       data.produtos.forEach((product) => {
         const productDiv = document.createElement('div');
         productDiv.classList.add('products');
-        productDiv.innerHTML = `
+        
+        const productHTML = `
           <div class="productContent">
             <p class="productInfo"><span class="product-name-label">Nome:</span> ${product.nome}</p>
-            <p class="productInfo"><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>
+            ${semPreco ? '' : `<p class="productInfo"><strong>Preço:</strong> R$ ${product.preco.toFixed(2)}</p>`}
             <p class="productInfo"><strong>Quantidade:</strong> ${product.quantidade}</p>
           </div>
           <div class="productActions">
@@ -352,31 +394,57 @@ async function renderProducts(inventoryId) {
   }
 
   // Reatribui o evento do botão de criar produto SEM duplicar
-  document.getElementById('createProductButton').onclick = openProductDialog;
+  document.getElementById('createProductButton').onclick = async () => {
+    await openProductDialog();
+  };
 }
 
 // Função para atualizar os modais baseado na configuração do inventário
 function updateProductModalsForInventory(semPreco) {
-  // Elementos de preço nos modais
-  const productPriceContainer = document.getElementById('productPrice')?.closest('.col-md-6');
-  const editProductPriceContainer = document.getElementById('editProductPrice')?.closest('.col-md-6');
+  console.log('Atualizando modais para semPreco:', semPreco);
+  
+  // Elementos de preço nos modais (grupos completos com label e input)
+  const productPriceGroup = document.getElementById('productPriceGroup');
+  const editProductPriceGroup = document.getElementById('editProductPriceGroup');
+  const productPriceField = document.getElementById('productPrice');
+  const editProductPriceField = document.getElementById('editProductPrice');
   
   if (semPreco) {
-    // Esconder campos de preço
-    if (productPriceContainer) productPriceContainer.style.display = 'none';
-    if (editProductPriceContainer) editProductPriceContainer.style.display = 'none';
+    // Esconder grupos de preço completos (label + input)
+    if (productPriceGroup) {
+      productPriceGroup.style.display = 'none';
+    }
+    if (editProductPriceGroup) {
+      editProductPriceGroup.style.display = 'none';
+    }
     
-    // Remover required dos campos de preço
-    if (productPrice) productPrice.removeAttribute('required');
-    if (editProductPrice) editProductPrice.removeAttribute('required');
+    // Remover required dos campos
+    if (productPriceField) {
+      productPriceField.removeAttribute('required');
+    }
+    if (editProductPriceField) {
+      editProductPriceField.removeAttribute('required');
+    }
+    
+    console.log('Grupos de preço escondidos e required removido');
   } else {
-    // Mostrar campos de preço
-    if (productPriceContainer) productPriceContainer.style.display = 'block';
-    if (editProductPriceContainer) editProductPriceContainer.style.display = 'block';
+    // Mostrar grupos de preço completos
+    if (productPriceGroup) {
+      productPriceGroup.style.display = 'flex';
+    }
+    if (editProductPriceGroup) {
+      editProductPriceGroup.style.display = 'flex';
+    }
     
-    // Adicionar required aos campos de preço
-    if (productPrice) productPrice.setAttribute('required', '');
-    if (editProductPrice) editProductPrice.setAttribute('required', '');
+    // Adicionar required aos campos
+    if (productPriceField) {
+      productPriceField.setAttribute('required', '');
+    }
+    if (editProductPriceField) {
+      editProductPriceField.setAttribute('required', '');
+    }
+    
+    console.log('Grupos de preço mostrados e required adicionado');
   }
 }
 
@@ -391,15 +459,40 @@ function clearProductInputs() {
   noPriceCheckbox.checked = false;
 }
 
+// Função para verificar configurações de preço do inventário atual
+async function checkInventoryPriceSettings() {
+  if (!selectedInventoryId) {
+    console.log('Nenhum inventário selecionado');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/produtos/${selectedInventoryId}`);
+    const data = await response.json();
+    
+    if (response.ok) {
+      const inventario = data.inventario;
+      const semPreco = inventario?.semPreco || false;
+      console.log('Configuração do inventário atual - semPreco:', semPreco);
+      updateProductModalsForInventory(semPreco);
+    }
+  } catch (error) {
+    console.error('Erro ao verificar configurações do inventário:', error);
+  }
+}
+
 // Função para abrir o dialog de produto
-function openProductDialog() {
+async function openProductDialog() {
+  // Verificar se o inventário atual é sem preço
+  await checkInventoryPriceSettings();
+  
   dialogCreateProduct.style.display = "block";
   const overlay = document.querySelector('.overlay');
   if (overlay) overlay.classList.add("darkBackground");
   // Remove event listeners antigos antes de adicionar um novo
   saveProductButton.onclick = async () => {
     dialogCreateProduct.style.display = "none";
-    overlay.classList.remove("show");
+    overlay.classList.remove("darkBackground");
     document.body.classList.remove("modal-open");
     try {
       const nome = productName.value;
@@ -409,16 +502,25 @@ function openProductDialog() {
       const precoValue = productPrice.value;
       const preco = precoValue && precoValue.trim() !== '' ? parseFloat(precoValue) : 0;
 
-      if (!nome || isNaN(quantidade) || quantidade < 0) {
-        alert("Preencha todos os campos corretamente!");
+      if (!nome) {
+        alert("Por favor, preencha o nome do produto!");
+        return;
+      }
+      
+      if (isNaN(quantidade) || quantidade < 0) {
+        alert("Por favor, insira uma quantidade válida!");
         return;
       }
       
       // Só valida preço se o campo estiver visível e obrigatório
-      if (productPrice.hasAttribute('required') && (isNaN(preco) || preco < 0)) {
-        alert("Preencha todos os campos corretamente!");
-        return;
-      } 
+      if (productPrice.hasAttribute('required') && productPrice.style.display !== 'none') {
+        if (isNaN(preco) || preco < 0) {
+          alert("Por favor, insira um preço válido!");
+          return;
+        }
+      }
+      
+      console.log('Criando produto:', { nome, quantidade, preco, semPreco: !productPrice.hasAttribute('required') }); 
 
       const response = await fetch("/createProduct", {
         method: "POST",
@@ -450,21 +552,26 @@ closeDialogButtons.forEach(button => {
   button.addEventListener('click', () => {
     if (button.id === 'closeDialogCreateProduct') {
       dialogCreateProduct.style.display = "none";
+      overlay.classList.remove("darkBackground");
     } else if (button.id === 'closeDialogEditProduct') {
       dialogEditProduct.style.display = "none";
+      overlay.classList.remove("darkBackground");
     } else if (button.id === 'closeDialogCreateInventory') {
       dialogCreateInventory.style.display = "none";
+      overlay.classList.remove("show");
+      document.body.classList.remove("modal-open");
     }
-  clearProductInputs();
-  const overlay = document.querySelector('.overlay');
-  if (overlay) overlay.classList.remove("darkBackground");
-  selectedProductId = null; 
+    clearProductInputs();
+    selectedProductId = null; 
   });
 });
 
 // Evento de clique no inventário
 inventoryList.addEventListener('click', async (e) => {
   if (e.target.classList.contains('inventory')) {
+    console.log('Inventário clicado:', e.target.textContent);
+    console.log('ID do inventário:', e.target.dataset.id);
+    
     // Remove a classe 'selected' de todos os inventários
     document.querySelectorAll('.inventory').forEach(inv => {
       inv.classList.remove('selected');
@@ -473,30 +580,53 @@ inventoryList.addEventListener('click', async (e) => {
     // Adiciona a classe 'selected' ao inventário clicado
     e.target.classList.add('selected');
     
-    mainTitle.textContent = e.target.textContent.replace(" >", "");
+    if (mainTitle) {
+      mainTitle.textContent = e.target.textContent.replace(" >", "");
+    } else {
+      console.error('Elemento mainTitle não encontrado!');
+    }
+    
     deleteInventoryBtn.style.opacity = "1";
     deleteInventoryBtn.style.visibility = "visible"
     selectedInventoryId = e.target.dataset.id;
+    
+    console.log('Chamando renderProducts com ID:', selectedInventoryId);
     await renderProducts(selectedInventoryId);
   }
 });
 
-dialogEditProduct.addEventListener('click', (e) => {
-  selectedProductId = e.target.classList.contains('editProduct') || e.target.classList.contains('editProductImage');
-  if (e.target === dialogEditProduct) {
-    dialogEditProduct.style.display = "block";
-    clearProductInputs();
-  }
-});
+// Event listener removido - lógica incorreta
 
 updateProductButton.addEventListener('click', async () => {
-  dialogEditProduct.style.display = "none";
-  const overlay = document.querySelector('.overlay');
-  if (overlay) overlay.classList.remove("darkBackground");
   try {
-    const editName = editProductName.value;
+    const editName = editProductName.value.trim();
     const editQuantity = parseInt(editProductQuantity.value);
+    const editPrice = parseFloat(editProductPrice.value) || 0;
     const idProduct = window.idProduto;
+
+    // Validação dos campos
+    if (!editName) {
+      alert("Por favor, preencha o nome do produto.");
+      return;
+    }
+    
+    if (isNaN(editQuantity) || editQuantity < 0) {
+      alert("Por favor, insira uma quantidade válida.");
+      return;
+    }
+    
+    // Só valida preço se o campo estiver visível e obrigatório
+    if (editProductPrice.hasAttribute('required') && (isNaN(editPrice) || editPrice < 0)) {
+      alert("Por favor, insira um preço válido.");
+      return;
+    }
+
+    if (!idProduct) {
+      alert("Erro: ID do produto não encontrado.");
+      return;
+    }
+
+    console.log('Atualizando produto:', { idProduct, editName, editPrice, editQuantity });
 
     const response = await fetch("/editProduct", {
       method: "POST",
@@ -510,44 +640,29 @@ updateProductButton.addEventListener('click', async () => {
         editQuantity
       }),
     });
+
     if (!response.ok) {
       throw new Error("Erro ao editar produto.");
-    } else {
-      dialogEditProduct.style.display = "none";
-      overlay.classList.remove("show");
-      document.body.classList.remove("modal-open");
-      clearProductInputs();
-      await renderProducts(selectedInventoryId);
-      await renderProducts(selectedInventoryId);
-      selectedProductId = null;
     }
+
+    // Fechar modal e limpar
+    dialogEditProduct.style.display = "none";
+    overlay.classList.remove("darkBackground");
+    clearProductInputs();
+    
+    // Atualizar lista de produtos
+    await renderProducts(selectedInventoryId);
+    selectedProductId = null;
+    
+    console.log('Produto atualizado com sucesso');
+
   } catch (error) {
     console.error("Falha ao editar produto.", error);
+    alert("Erro ao salvar as alterações do produto.");
   }
 });
 
-// Event listeners para botões de cancelar
-document.getElementById('cancelCreateProduct')?.addEventListener('click', () => {
-  dialogCreateProduct.style.display = "none";
-  overlay.classList.remove("show");
-  document.body.classList.remove("modal-open");
-  clearProductInputs();
-});
-
-document.getElementById('cancelEditProduct')?.addEventListener('click', () => {
-  dialogEditProduct.style.display = "none";
-  overlay.classList.remove("show");
-  document.body.classList.remove("modal-open");
-  clearProductInputs();
-  selectedProductId = null;
-});
-
-document.getElementById('cancelCreateInventory')?.addEventListener('click', () => {
-  dialogCreateInventory.style.display = "none";
-  overlay.classList.remove("show");
-  document.body.classList.remove("modal-open");
-  clearProductInputs();
-});
+// Event listeners removidos - botões não existem no HTML
 
 // Fechar modais ao clicar no overlay
 overlay.addEventListener('click', () => {
@@ -555,6 +670,7 @@ overlay.addEventListener('click', () => {
   dialogEditProduct.style.display = "none";
   dialogCreateInventory.style.display = "none";
   overlay.classList.remove("show");
+  overlay.classList.remove("darkBackground");
   document.body.classList.remove("modal-open");
   clearProductInputs();
   selectedProductId = null;

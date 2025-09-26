@@ -26,7 +26,7 @@
 <body>
     <div class="background-overlay"></div>
     
-    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
         <main class="auth-card shadow-lg" role="main">
             <header class="text-center mb-4">
                 <h1 id="titulo" class="brand-title">Stock Master</h1>
@@ -37,9 +37,10 @@
             
             <section class="auth-form-section">
                 <form class="form-content needs-validation" id="form" novalidate aria-label="Formulário de login">
-                    <h2 id="subtitulo" class="form-title text-center mb-4">Realize seu Login</h2>
+                    <h2 id="subtitulo" class="form-title text-center mb-3">Realize seu Login</h2>
                     
-                    <div class="form-floating mb-3">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
                         <input 
                             class="form-control login" 
                             id="email" 
@@ -49,13 +50,13 @@
                             autocomplete="email"
                             aria-describedby="emailError"
                         >
-                        <label for="email">E-mail</label>
                         <div id="emailError" class="error invalid-feedback">
                             Por favor, insira um e-mail válido.
                         </div>
                     </div>
                     
-                    <div class="form-floating mb-4">
+                    <div class="mb-3">
+                        <label for="senha" class="form-label">Senha</label>
                         <input 
                             class="form-control login" 
                             id="senha" 
@@ -65,7 +66,6 @@
                             autocomplete="current-password"
                             aria-describedby="senhaError"
                         >
-                        <label for="senha">Senha</label>
                         <div id="senhaError" class="error invalid-feedback">
                             Por favor, insira sua senha.
                         </div>

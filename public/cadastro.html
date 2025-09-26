@@ -26,7 +26,7 @@
 <body>
     <div class="background-overlay"></div>
     
-    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
         <main class="auth-card shadow-lg" role="main">
             <header class="text-center mb-4">
                 <h1 id="titulo" class="brand-title">Stock Master</h1>
@@ -37,9 +37,10 @@
             
             <section class="auth-form-section">
                 <form class="form-content needs-validation" id="form" novalidate aria-label="Formulário de cadastro">
-                    <h2 id="subtitulo" class="form-title text-center mb-4">Cadastre-se</h2>
+                    <h2 id="subtitulo" class="form-title text-center mb-3">Cadastre-se</h2>
                     
-                    <div class="form-floating mb-3">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
                         <input 
                             class="form-control cadastro" 
                             id="email" 
@@ -49,13 +50,13 @@
                             autocomplete="email"
                             aria-describedby="emailFeedback"
                         >
-                        <label for="email">E-mail</label>
                         <div id="emailFeedback" class="invalid-feedback">
                             Por favor, insira um e-mail válido.
                         </div>
                     </div>
                     
-                    <div class="form-floating mb-3">
+                    <div class="mb-3">
+                        <label for="senha" class="form-label">Senha</label>
                         <input 
                             class="form-control cadastro" 
                             id="senha" 
@@ -66,13 +67,13 @@
                             autocomplete="new-password"
                             aria-describedby="senhaFeedback"
                         >
-                        <label for="senha">Senha</label>
                         <div id="senhaFeedback" class="invalid-feedback">
                             A senha deve ter pelo menos 8 caracteres.
                         </div>
                     </div>
                     
-                    <div class="form-floating mb-4">
+                    <div class="mb-3">
+                        <label for="conf_senha" class="form-label">Confirmar senha</label>
                         <input 
                             class="form-control cadastro" 
                             id="conf_senha" 
@@ -83,7 +84,6 @@
                             autocomplete="new-password"
                             aria-describedby="confSenhaFeedback"
                         >
-                        <label for="conf_senha">Confirmar senha</label>
                         <div id="confSenhaFeedback" class="invalid-feedback">
                             As senhas devem coincidir.
                         </div>
